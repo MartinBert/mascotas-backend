@@ -33,15 +33,21 @@ const authController = {
     async verifyAuthentication(req, res) {
         const token = req.params.token;
         try {
+            if(!token) return res.status(403).send({
+                authorized: false
+            })
+            
             const loguedUser = await jwt.verify(token, public_key, { algorithms: ['RS256'] })
             const { email, password } = loguedUser;
             User.findOne({ email }, (error, user) => {
                 if(error) return res.status(500).send({
                     message: "Error de verificación de usuario",
-                    detail: error.message
+                    detail: error.message,
+                    authorized: false
                 });
                 if(!user) return res.status(401).send({
-                    message: "Token corrupto"
+                    message: "Token corrupto",
+                    authorized: false
                 });
                 if (user.password === password) {
                     return res.status(200).send({
@@ -49,7 +55,8 @@ const authController = {
                     });
                 } else {
                     return res.status(401).send({
-                        message: "Token corrupto en informacion de contraseña de usuario"
+                        message: "Token corrupto en informacion de contraseña de usuario",
+                        authorized: false
                     });
                 }
             })

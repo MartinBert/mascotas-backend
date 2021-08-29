@@ -2,7 +2,7 @@
 
 module.exports = {
     // Local -- test
-    port: process.env.PORT || 8000,
+    port: process.env.PORT || 8005,
 
     //Production
     //port: process.env.PORT || 80,
