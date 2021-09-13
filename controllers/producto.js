@@ -2,9 +2,6 @@
 
 const express = require('express');
 const Model   = require('../models/producto');
-const Usuario = require('../models/usuario');
-const jwt = require('jsonwebtoken');
-const config = require("../config/index");
 const router  = express.Router();
 
 router.post('/', (request, response) => {
@@ -17,7 +14,6 @@ router.post('/', (request, response) => {
                 stacktrace: error
             });
         }
-
         return response.status(201).json(item);
     });
 });
@@ -31,65 +27,42 @@ router.get('/:id', (request, response) => {
                 stacktrace: error
             });
         }
-
         return response.status(200).json(item);
     });
 });
 
 router.get('/', (request, response) => {
-    var auth = request.headers.authorization;
-    var token = auth.replace("Bearer ", "");
-    jwt.verify(token,config.jwt.secretKey, function(err,decode) {
-        if(err) {
-            return res.status(401).json({
-                status: 401,
-                marca: 'El token no es valido'
+    const {page, limit, filters} = request.query;
+    const query = JSON.parse(filters);
+    (query) ? console.log(query.marca) : console.log("nada")
+    Model.paginate((query !== null) ? { 
+        $or: [
+            {nombre: new RegExp(query.nombre, "i")}, 
+            {codigoBarras:  new RegExp(query.codigoBarras, "i")}, 
+            {codigoProducto: new RegExp(query.codigoProducto, "i")}
+        ],
+        $and:[
+            {$or: [
+                {marca: query.marca},
+                {rubro: query.rubro}
+            ]}
+        ]
+    
+    } : {}, {
+        page,
+        limit,
+        populate: ['rubro', 'marca', 'imagenes']
+    }, (error, items) => {
+        if (error) {
+            console.log(error);
+            return response.status(500).json({
+                code: '500',
+                marca: "Ha ocurrido un error",
+                stacktrace: error
             });
         }
-
-        Usuario.findById(decode._id, (error, user) => {
-            if(error) return done(error, false);
-    
-            if(user) {
-                if(user.perfil){
-                    Model.find()
-                    .populate('imagenes', 'filename url')
-                    .populate('marca', 'nombre')
-                    .populate('rubro', 'nombre')
-                    .exec((error, items) => {
-                        if (error) {
-                            return response.status(500).json({
-                                code: '500',
-                                marca: "Ha ocurrido un error",
-                                stacktrace: error
-                            });
-                        }
-                        return response.status(200).json(items);
-                    });
-                }
-                else{
-                    Model.find()
-                    .populate('imagenes', 'filename url')
-                    .populate('marca', 'nombre')
-                    .populate('rubro', 'nombre')
-                    .exec((error, items) => {
-                        if (error) {
-                            return response.status(500).json({
-                                code: '500',
-                                marca: "Ha ocurrido un error",
-                                stacktrace: error
-                            });
-                        }
-                        return response.status(200).json(items);
-                    });
-                }
-    
-            } else {
-                done(null, false);
-            }
-        });  
+        return response.status(200).json(items);
     })
-    
 });
 
 router.put('/:id', (request, response) => {
@@ -102,36 +75,21 @@ router.put('/:id', (request, response) => {
                 stacktrace: error
             });
         }
-
         return response.status(200).json(item);
     });
 });
 
 router.delete('/:id', (request, response) => {
-    Model.findById(request.params.id, function (error, item) {
-        if (error) {
+    Model.remove({_id: request.params.id}, (error, item) => {
+        if(error){
             return response.status(500).json({
                 code: '500',
                 marca: "Ha ocurrido un error",
                 stacktrace: error
             });
         }
-
-        item.remove((error, item) => {
-            if (error) {
-                return response.status(500).json({
-                    code: '500',
-                    marca: "Ha ocurrido un error",
-                    stacktrace: error
-                });
-            }
-
-            return response.status(204).json({
-                code: '204',
-                marca: "Se ha eliminado con éxito"
-            });
-        });
-    });
+        return response.status(200).json(item);
+    })
 });
 
 module.exports = router;

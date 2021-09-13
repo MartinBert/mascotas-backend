@@ -2,6 +2,7 @@
 
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const schema = new Schema({
     url: {
@@ -25,5 +26,7 @@ const schema = new Schema({
         required: true
     }
 }, { timestamps: true });
+
+schema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('Archivo', schema);

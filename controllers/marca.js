@@ -36,55 +36,39 @@ router.get('/:id', (request, response) => {
 });
 
 router.get('/', (request, response) => {
-    var auth = request.headers.authorization;
-    var token = auth.replace("Bearer ", "");
-    jwt.verify(token,config.jwt.secretKey, function(err,decode) {
-        if(err) {
-            return res.status(401).json({
-                status: 401,
-                marca: 'El token no es valido'
+    const {page, limit, filters} = request.query;
+    console.log(page, limit, filters);
+    const query = JSON.parse(filters);
+    Model.paginate(query, {
+        page,
+        limit,
+    }, (error, items) => {
+        if (error) {
+            return response.status(500).json({
+                code: '500',
+                marca: "Ha ocurrido un error",
+                stacktrace: error
             });
         }
-
-        Usuario.findById(decode._id, (error, user) => {
-            if(error) return done(error, false);
-    
-            if(user) {
-                if(user.perfil){
-                    Model.find()
-                    .sort({'nombre': 1})
-                    .exec((error, items) => {
-                        if (error) {
-                            return response.status(500).json({
-                                code: '500',
-                                marca: "Ha ocurrido un error",
-                                stacktrace: error
-                            });
-                        }
-                        return response.status(200).json(items);
-                    });
-                }
-                else{
-                    Model.find()
-                    .sort({'nombre': 1})
-                    .exec((error, items) => {
-                        if (error) {
-                            return response.status(500).json({
-                                code: '500',
-                                marca: "Ha ocurrido un error",
-                                stacktrace: error
-                            });
-                        }
-                        return response.status(200).json(items);
-                    });
-                }
-    
-            } else {
-                done(null, false);
-            }
-        });  
+        return response.status(200).json(items);
     })
-    
+});
+
+router.get('/name/:name', (request, response) => {
+    const query = {nombre: new RegExp(request.params.name, "i")}
+    Model.paginate(query, {
+        page: 0,
+        limit: 10,
+    }, (error, items) => {
+        if (error) {
+            return response.status(500).json({
+                code: '500',
+                marca: "Ha ocurrido un error",
+                stacktrace: error
+            });
+        }
+        return response.status(200).json(items);
+    })
 });
 
 router.put('/:id', (request, response) => {
