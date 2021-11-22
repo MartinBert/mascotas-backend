@@ -39,7 +39,7 @@ router.get('/:id', (request, response) => {
 router.get('/', (request, response) => {
     const {page, limit, filters} = request.query;
     const query = JSON.parse(filters);
-    Model.paginate(query, {
+    Model.paginate((query) ? {nombre: new RegExp(query.nombre, 'i')} : {}, {
         page,
         limit,
     }, (error, items) => {
