@@ -10,7 +10,6 @@ const config = require("./config/index");
 const passport = require('passport');
 const cors = require('cors');
 const path = require('path')
-
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
@@ -18,18 +17,11 @@ const io = require('socket.io')(http);
 app.use(helmet());
 app.use(methodOverride());
 app.use(cors());
-
 app.use(passport.initialize());
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(compression());
-
 app.use(express.static(__dirname + '/front'));
-
-app.all("/", function(request, response, next) {
-    response.sendFile(path.join(__dirname+'/front/admin/index.html'));
-});
 
 /* Socket io */
 io.on('connection', function(socket){
@@ -47,7 +39,7 @@ http.listen(config.port, () => {
             console.log('Error with mongo: ', error);
             process.exit(1);
         }
-
+        console.log(__dirname);
         console.log(`Node server is up and running on port ${config.port}`);
         require('./routes')(app);
     });

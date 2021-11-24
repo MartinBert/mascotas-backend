@@ -10,7 +10,6 @@ module.exports = app => {
     router.use('/usuarios', require('./controllers/usuario'));
     router.use('/productos', require('./controllers/producto'));
     router.use('/rubros', require('./controllers/rubro'));
-    router.use('/uploads', require('./controllers/upload'));
     router.use('/marcas', require('./controllers/marca'))
     router.use('/salidas', require('./controllers/salida'))
 
