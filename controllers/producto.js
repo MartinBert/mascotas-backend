@@ -17,6 +17,14 @@ const successResponse = {
     message: 'OK'
 }
 
+const successWithItems = (items) => {
+    return {
+        code: 200,
+        message: 'OK',
+        data: items
+    }
+}
+
 router.post('/', (request, response) => {
     let item = new Model(request.body);
     item.save((error) => {
@@ -39,7 +47,6 @@ router.get('/:id', (request, response) => {
 router.get('/', (request, response) => {
     const {page, limit, filters} = request.query;
     const query = JSON.parse(filters);
-    (query) ? console.log(query.marca) : console.log("nada")
     Model.paginate((query !== null) ? { 
         $or: [
             {nombre: new RegExp(query.nombre, "i")}, 
@@ -56,12 +63,12 @@ router.get('/', (request, response) => {
     } : {}, {
         page,
         limit,
-        populate: ['rubro', 'marca', 'imagenes']
-    }, (error) => {
+        populate: ['rubro', 'marca']
+    }, (error, items) => {
         if (error) {
             return response.status(500).json(errorResponse(error));
         }
-        return response.status(200).json(successResponse);
+        return response.status(200).send(items);
     })
 });
 

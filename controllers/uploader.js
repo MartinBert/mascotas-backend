@@ -1,3 +1,4 @@
+const Model = require('../models/archivo');
 const express = require('express');
 const router  = express.Router();
 const multer  = require('multer');
@@ -21,7 +22,7 @@ const successResponse = (file) => {
 }
 
 const storage = multer.diskStorage({
-    destination: './front/uploads',
+    destination: './public/uploads',
     filename: function (req, file, callback) {
         crypto.pseudoRandomBytes(16, function(err, raw) {
             if (err) return callback(err);
@@ -35,6 +36,13 @@ const upload = multer({storage:storage});
 router.post('/', upload.single('file'), (request, response) => {
     if(!request.file) return errorResponse('No se cargó ninguna imagen');
     return response.status(200).send(successResponse());
+});
+
+router.get('/:id', (request, response) => {
+    Model.findOne({ _id: request.params.id }, (error, item) => {
+        if (error) return errorResponse(error);
+        return response.status(200).send(item.url);
+    })
 });
 
 module.exports = router;

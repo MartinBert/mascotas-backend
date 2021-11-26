@@ -12,6 +12,6 @@ module.exports = app => {
     router.use('/rubros', require('./controllers/rubro'));
     router.use('/marcas', require('./controllers/marca'));
     router.use('/salidas', require('./controllers/salida'));
-    router.use('/uploader', require('./controllers/uploader'));
+    router.use('/uploads', require('./controllers/uploader'));
     app.use('/api/v1/', router);
 };
