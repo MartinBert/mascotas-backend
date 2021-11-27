@@ -28,9 +28,7 @@ const successWithItems = (items) => {
 router.post('/', (request, response) => {
     let item = new Model(request.body);
     item.save((error) => {
-        if (error) {
-            return response.status(500).json(errorResponse(error));
-        }
+        if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(successResponse);
     });
 });

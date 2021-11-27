@@ -1,9 +1,11 @@
 const Model = require('../models/archivo');
 const express = require('express');
-const router  = express.Router();
-const multer  = require('multer');
-const crypto  = require('crypto');
-const path    = require('path');
+const router = express.Router();
+const multer = require('multer');
+const crypto = require('crypto');
+const path = require('path');
+const {join} = require('path')
+const fs = require('fs')
 
 const errorResponse = (error) => {
     return {
@@ -34,8 +36,12 @@ const storage = multer.diskStorage({
 const upload = multer({storage:storage});
 
 router.post('/', upload.single('file'), (request, response) => {
-    if(!request.file) return errorResponse('No se cargó ninguna imagen');
-    return response.status(200).send(successResponse());
+    if(!request.file || request.file.length < 1) return errorResponse('No se cargó ninguna imagen');
+    request.file.url = request.protocol + '://' + request.get('host') + '/uploads/' + request.file.filename;
+    Model.insertMany(request.file, (error, item) => {
+        if(error) return response.status(500).send(errorResponse(error));
+        return response.status(200).send(successResponse(item));
+    })
 });
 
 router.get('/:id', (request, response) => {
@@ -44,5 +50,20 @@ router.get('/:id', (request, response) => {
         return response.status(200).send(item.url);
     })
 });
+
+router.delete('/:id', (request, response) => {
+    Model.findOne({_id: request.params.id}, (error, item) => {
+        if(error) return response.status(500).send(errorResponse(error));
+        if(!item) return response.status(404).send(errorResponse('Item does not exit'));
+        fs.unlink('public/uploads/' + item.filename, (err) => {
+            if(err) return response.status(404).send(errorResponse('File is not in directory'));
+            Model.deleteOne({_id: request.params.id}, {}, (error, deletedItem) => {
+                if(error) return response.status(500).send(errorResponse(error));
+                if(!deletedItem) return response.status(404).send(errorResponse('The item could not be removed'));
+                return response.status(200).send(successResponse(deletedItem));
+            })
+        })
+    })
+})
 
 module.exports = router;

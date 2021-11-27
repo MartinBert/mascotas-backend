@@ -39,7 +39,6 @@ http.listen(config.port, () => {
             console.log('Error with mongo: ', error);
             process.exit(1);
         }
-        console.log(__dirname + '/uploads')
         console.log(`Node server is up and running on port ${config.port}`);
         require('./routes')(app);
     });
