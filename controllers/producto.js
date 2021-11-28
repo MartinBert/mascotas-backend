@@ -34,31 +34,24 @@ router.post('/', (request, response) => {
 });
 
 router.get('/:id', (request, response) => {
-    Model.findById(request.params.id).exec((error) => {
-        if (error) {
-            return response.status(500).json(errorResponse(error));
-        }
-        return response.status(200).json(successResponse);
+    Model.findById(request.params.id).exec((error, item) => {
+        if (error) return response.status(500).json(errorResponse(error));
+        return response.status(200).json(successWithItems(item));
     });
 });
 
 router.get('/', (request, response) => {
     const {page, limit, filters} = request.query;
     const query = JSON.parse(filters);
-    Model.paginate((query !== null) ? { 
-        $or: [
-            {nombre: new RegExp(query.nombre, "i")}, 
-            {codigoBarras:  new RegExp(query.codigoBarras, "i")}, 
-            {codigoProducto: new RegExp(query.codigoProducto, "i")}
-        ],
-        $and:[
-            {$or: [
-                {marca: query.marca},
-                {rubro: query.rubro}
-            ]}
-        ]
+
+    if(query){
+        const queryKeys = Object.keys(query);
+        queryKeys.forEach(key => {
+            query[key] = new RegExp(query[key], 'i')
+        })
+    }
     
-    } : {}, {
+    Model.paginate((query !== null) ? query : {}, {
         page,
         limit,
         populate: ['rubro', 'marca']

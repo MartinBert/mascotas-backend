@@ -37,28 +37,29 @@ const authController = {
                 authorized: false
             })
             
-            const loguedUser = await jwt.verify(token, public_key, { algorithms: ['RS256'] })
-            const { email, password } = loguedUser;
-            User.findOne({ email }, (error, user) => {
-                if(error) return res.status(500).send({
-                    message: "Error de verificación de usuario",
-                    detail: error.message,
-                    authorized: false
-                });
-                if(!user) return res.status(401).send({
+            jwt.verify(token, public_key, { algorithms: ['RS256'] }, (err, loggedUser) => {
+                if(err) return res.status(401).send({
                     message: "Token corrupto",
                     authorized: false
                 });
-                if (user.password === password) {
-                    return res.status(200).send({
-                        authorized: true
-                    });
-                } else {
-                    return res.status(401).send({
-                        message: "Token corrupto en informacion de contraseña de usuario",
+
+                const { email, password } = loggedUser;
+                User.findOne({ email }, (error, user) => {
+                    if(error) return res.status(500).send({
+                        message: "Error de verificación de usuario",
+                        detail: error.message,
                         authorized: false
                     });
-                }
+                    if (user.password === password) {
+                        return res.status(200).send({
+                            authorized: true
+                        });
+                    } else {
+                        return res.status(401).send({
+                            authorized: false
+                        })
+                    }
+                })
             })
         } catch (error) {
             console.error(error);

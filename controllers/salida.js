@@ -2,12 +2,6 @@
 
 const express = require('express');
 const Model   = require('../models/salida');
-const Usuario = require('../models/usuario');
-const jwt = require('jsonwebtoken');
-const passport = require('passport');
-const JWTstrategy = require('passport-jwt').Strategy;
-const ExtractJWT = require('passport-jwt').ExtractJwt;
-const config = require("../config/index");
 const router  = express.Router();
 
 router.post('/', (request, response) => {
