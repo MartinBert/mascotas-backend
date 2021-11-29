@@ -43,14 +43,16 @@ router.get('/:id', (request, response) => {
 router.get('/', (request, response) => {
     const {page, limit, filters} = request.query;
     const query = JSON.parse(filters);
-
+    
     if(query){
         const queryKeys = Object.keys(query);
         queryKeys.forEach(key => {
-            query[key] = new RegExp(query[key], 'i')
+            if(key !== 'marca' && key !== 'rubro'){
+                query[key] = new RegExp(query[key], 'i')
+            }
         })
     }
-    
+
     Model.paginate((query !== null) ? query : {}, {
         page,
         limit,

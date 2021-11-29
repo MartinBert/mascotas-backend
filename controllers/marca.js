@@ -51,7 +51,7 @@ router.get('/', (request, response) => {
 //Get marcas by name
 router.get('/name/:name', (request, response) => {
     console.log(request.params.name);
-    Model.paginate({nombre: new RegExp(request.params.name)}, {
+    Model.paginate({nombre: new RegExp(request.params.name, 'i')}, {
         page: 0,
         limit: 10,
     }, (error, items) => {
