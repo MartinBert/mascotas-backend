@@ -46,7 +46,7 @@ const schema = new Schema({
     },
     imagenes:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Archivo'
+        ref: 'archivo'
     }],
 }, { timestamps: true });
 

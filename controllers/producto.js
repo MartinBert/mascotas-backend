@@ -35,6 +35,7 @@ router.post('/', (request, response) => {
 
 router.get('/:id', (request, response) => {
     Model.findById(request.params.id).exec((error, item) => {
+        console.log(item)
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(successWithItems(item));
     });
@@ -65,7 +66,7 @@ router.get('/', (request, response) => {
     })
 });
 
-router.put('/:id', (request, response) => {
+router.put('/', (request, response) => {
     let item = new Model(request.body);
     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
         if (error) {

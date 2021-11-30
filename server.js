@@ -9,7 +9,6 @@ const compression = require('compression');
 const config = require("./config/index");
 const passport = require('passport');
 const cors = require('cors');
-const {join} = require('path')
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);

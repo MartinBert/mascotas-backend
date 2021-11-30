@@ -29,4 +29,4 @@ const schema = new Schema({
 
 schema.plugin(mongoosePaginate);
 
-module.exports = mongoose.model('Archivo', schema);
+module.exports = mongoose.model('archivo', schema);

@@ -4,7 +4,6 @@ const router = express.Router();
 const multer = require('multer');
 const crypto = require('crypto');
 const path = require('path');
-const {join} = require('path')
 const fs = require('fs')
 
 const errorResponse = (error) => {
