@@ -28,16 +28,22 @@ const successWithItems = (items) => {
 router.post('/', (request, response) => {
     let item = new Model(request.body);
     item.save((error) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(successResponse);
+        if (error) return response.status(500).send(errorResponse(error));
+        return response.status(200).send(successResponse);
     });
 });
 
 router.get('/:id', (request, response) => {
     Model.findById(request.params.id).exec((error, item) => {
-        console.log(item)
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(successWithItems(item));
+        if (error) return response.status(500).send(errorResponse(error));
+        return response.status(200).send(successWithItems(item));
+    });
+});
+
+router.get('/barcode/:barcode', (request, response) => {
+    Model.findOne({codigoBarras: request.params.barcode}).exec((error, item) => {
+        if (error) return response.status(500).send(errorResponse(error));
+        return response.status(200).send(successWithItems(item));
     });
 });
 
@@ -60,7 +66,7 @@ router.get('/', (request, response) => {
         populate: ['rubro', 'marca', 'imagenes']
     }, (error, items) => {
         if (error) {
-            return response.status(500).json(errorResponse(error));
+            return response.status(500).send(errorResponse(error));
         }
         return response.status(200).send(items);
     })
@@ -68,20 +74,20 @@ router.get('/', (request, response) => {
 
 router.put('/', (request, response) => {
     let item = new Model(request.body);
-    Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
+    Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error) => {
         if (error) {
-            return response.status(500).json(errorResponse(error));
+            return response.status(500).send(errorResponse(error));
         }
-        return response.status(200).json(successResponse);
+        return response.status(200).send(successResponse);
     });
 });
 
 router.delete('/:id', (request, response) => {
     Model.remove({_id: request.params.id}, (error) => {
         if(error){
-            return response.status(500).json(errorResponse(error));
+            return response.status(500).send(errorResponse(error));
         }
-        return response.status(200).json(successResponse);
+        return response.status(200).send(successResponse);
     })
 });
 

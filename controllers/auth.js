@@ -3,27 +3,50 @@ const User = require('../models/usuario');
 const jwt = require('jsonwebtoken');
 const { private_key, public_key } = keys;
 
+const errorResponse = (code, error) => {
+    return {
+        code,
+        message: 'Error',
+        printStackTrace: error
+    }
+}
+
+const successResponseWithToken = (token, userId) => {
+    return {
+        code: 200,
+        message: 'OK',
+        token,
+        data: userId
+    }
+}
+
+const successResponseWithAuthorization = {
+    code: 200,
+    message: 'OK',
+    authorized: true
+}
+
+const errorResponseAuthorization = (code, error) => {
+    return {
+        code,
+        message: 'Error',
+        authorized: false,
+        printStackTrace: error
+    }
+}
+
 const authController = {
     login(req, res) {
         const { email, password } = req.body;
         User.findOne({ email }, (error, user) => {
-            if(error) return res.status(500).send({
-                message: "Error de login",
-                detail: error.message
-            });
-            if(!user) return res.status(401).send({
-                message: "No se encontró un usuario con ese email"
-            });
+            if(error) return res.status(500).send(500, error);
+            if(!user) return res.status(401).send(401, 'Invalid mail');
             validateCredentials(user, password)
             .then(token => {
                 if(token) {
-                    return res.status(200).send({
-                        token
-                    })
+                    return res.status(200).send(successResponseWithToken(token, user._id))
                 } else {
-                    return res.status(401).send({
-                        message: "Contraseña inválida"
-                    });
+                    return res.status(401).send(errorResponse(401, 'Invalid credentials'));
                 }
             })
 
@@ -36,28 +59,15 @@ const authController = {
             if(!token) return res.status(403).send({
                 authorized: false
             })
-            
             jwt.verify(token, public_key, { algorithms: ['RS256'] }, (err, loggedUser) => {
-                if(err) return res.status(401).send({
-                    message: "Token corrupto",
-                    authorized: false
-                });
-
+                if(err) return res.status(401).send(errorResponseAuthorization(401, err));
                 const { email, password } = loggedUser;
                 User.findOne({ email }, (error, user) => {
-                    if(error) return res.status(500).send({
-                        message: "Error de verificación de usuario",
-                        detail: error.message,
-                        authorized: false
-                    });
+                    if(error) return res.status(500).send(errorResponseAuthorization(500, error));
                     if (user.password === password) {
-                        return res.status(200).send({
-                            authorized: true
-                        });
+                        return res.status(200).send(successResponseWithAuthorization);
                     } else {
-                        return res.status(401).send({
-                            authorized: false
-                        })
+                        return res.status(401).send(401, 'Unauthorized');
                     }
                 })
             })

@@ -24,7 +24,7 @@ const schema = new Schema({
     productos: [{ type: Object }],   
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'usuario'
     },   
 }, { timestamps: true });
 

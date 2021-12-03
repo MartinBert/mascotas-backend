@@ -1,35 +1,40 @@
-'use strict';
-
 const express = require('express');
 const Model   = require('../models/salida');
 const router  = express.Router();
 
+const errorResponse = (error) => {
+    return {
+        code: 500,
+        message: "Error",
+        printStackTrace: error
+    }
+}
+
+const successResponse = {
+    code: 200,
+    message: 'OK'
+}
+
+const successWithItems = (items) => {
+    return {
+        code: 200,
+        message: 'OK',
+        data: items
+    }
+}
+
 router.post('/', (request, response) => {
     let item = new Model(request.body);
     item.save((error, item) => {
-        if (error) {
-            return response.status(500).json({
-                code: '500',
-                marca: "Ha ocurrido un error",
-                stacktrace: error
-            });
-        }
-
-        return response.status(201).json(item);
+        if (error) return response.status(500).send(errorResponse(error));
+        return response.status(200).send(successWithItems(item));
     });
 });
 
 router.get('/:id', (request, response) => {
     Model.findById(request.params.id).exec((error, item) => {
-        if (error) {
-            return response.status(500).json({
-                code: '500',
-                marca: "Ha ocurrido un error",
-                stacktrace: error
-            });
-        }
-
-        return response.status(200).json(item);
+        if (error) return response.status(500).send(errorResponse(error));
+        return response.status(200).send(successWithItems(item));
     });
 });
 
@@ -39,59 +44,28 @@ router.get('/', (request, response) => {
     Model.paginate(query, {
         page,
         limit,
-        populate: ['usuario', 'productos']
+        populate: ['usuario']
     }, (error, items) => {
-        if (error) {
-            return response.status(500).json({
-                code: '500',
-                marca: "Ha ocurrido un error",
-                stacktrace: error
-            });
-        }
-        return response.status(200).json(items);
+        if (error) return response.status(500).send(errorResponse(error));
+        return response.status(200).send(successWithItems(items));
     })
 });
 
-router.put('/:id', (request, response) => {
+router.put('/', (request, response) => {
     let item = new Model(request.body);
-    Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error, item) => {
-        if (error) {
-            return response.status(500).json({
-                code: '500',
-                marca: "Ha ocurrido un error",
-                stacktrace: error
-            });
-        }
-
-        return response.status(200).json(item);
+    Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error, item) => {
+        if (error) return response.status(500).send(errorResponse(error));
+        return response.status(200).send(successWithItems(item));
     });
 });
 
 router.delete('/:id', (request, response) => {
-    Model.findById(request.params.id, function (error, item) {
-        if (error) {
-            return response.status(500).json({
-                code: '500',
-                marca: "Ha ocurrido un error",
-                stacktrace: error
-            });
+    Model.remove({_id: request.params.id}, (error) => {
+        if(error){
+            return response.status(500).send(errorResponse(error));
         }
-
-        item.remove((error, item) => {
-            if (error) {
-                return response.status(500).json({
-                    code: '500',
-                    marca: "Ha ocurrido un error",
-                    stacktrace: error
-                });
-            }
-
-            return response.status(204).json({
-                code: '204',
-                marca: "Se ha eliminado con éxito"
-            });
-        });
-    });
+        return response.status(200).send(successResponse);
+    })
 });
 
 module.exports = router;
