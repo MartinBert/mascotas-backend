@@ -1,17 +1,14 @@
-'use strict';
-
-const express = require('express'),
-    router = express.Router(),
-    auth = require('./controllers/auth');
+const express = require('express');
+const router = express.Router();
+const auth = require('./middleware/auth');
 
 module.exports = app => {
     router.use('/auth', auth.login);
-    router.use('/checkToken/:token', auth.verifyAuthentication);
-    router.use('/usuarios', require('./controllers/usuario'));
-    router.use('/productos', require('./controllers/producto'));
-    router.use('/rubros', require('./controllers/rubro'));
-    router.use('/marcas', require('./controllers/marca'));
-    router.use('/salidas', require('./controllers/salida'));
-    router.use('/uploads', require('./controllers/uploader'));
+    router.use('/usuarios', auth.verifyAuthentication, require('./controllers/usuario'));
+    router.use('/productos', auth.verifyAuthentication, require('./controllers/producto'));
+    router.use('/rubros', auth.verifyAuthentication, require('./controllers/rubro'));
+    router.use('/marcas', auth.verifyAuthentication, require('./controllers/marca'));
+    router.use('/salidas', auth.verifyAuthentication, require('./controllers/salida'));
+    router.use('/uploads', auth.verifyAuthentication, require('./controllers/uploader'));
     app.use('/api/v1/', router);
 };

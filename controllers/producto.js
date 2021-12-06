@@ -1,5 +1,3 @@
-'use strict';
-
 const express = require('express');
 const Model   = require('../models/producto');
 const router  = express.Router();

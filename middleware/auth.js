@@ -20,12 +20,6 @@ const successResponseWithToken = (token, userId) => {
     }
 }
 
-const successResponseWithAuthorization = {
-    code: 200,
-    message: 'OK',
-    authorized: true
-}
-
 const errorResponseAuthorization = (code, error) => {
     return {
         code,
@@ -53,8 +47,8 @@ const authController = {
         })
     },
 
-    async verifyAuthentication(req, res) {
-        const token = req.params.token;
+    verifyAuthentication(req, res, next) {
+        const token = req.headers.authorization;
         try {
             if(!token) return res.status(403).send({
                 authorized: false
@@ -65,9 +59,9 @@ const authController = {
                 User.findOne({ email }, (error, user) => {
                     if(error) return res.status(500).send(errorResponseAuthorization(500, error));
                     if (user.password === password) {
-                        return res.status(200).send(successResponseWithAuthorization);
+                        next();
                     } else {
-                        return res.status(401).send(401, 'Unauthorized');
+                        return res.status(401).send(errorResponseAuthorization(401, 'Unauthorized'));
                     }
                 })
             })
