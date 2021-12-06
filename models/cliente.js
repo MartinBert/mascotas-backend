@@ -14,7 +14,7 @@ const schema = new Schema({
         required: true
     },
     condicionFiscal: {
-        type: Object,
+        type: String,
         required: true
     },
     email: {
