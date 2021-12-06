@@ -34,7 +34,11 @@ router.post('/', (request, response) => {
 });
 
 router.get('/:id', (request, response) => {
-    Model.findById(request.params.id).exec((error, item) => {
+    Model.findById(request.params.id)
+    .populate('imagenes')
+    .populate('marca')
+    .populate('rubro')
+    .exec((error, item) => {
         if (error) return response.status(500).send(errorResponse(error));
         return response.status(200).send(successWithItems(item));
     });
