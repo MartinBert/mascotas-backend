@@ -1,4 +1,3 @@
-'use strict';
 const express = require('express');
 const Model   = require('../models/documento');
 const router  = express.Router();
