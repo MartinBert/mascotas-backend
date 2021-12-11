@@ -9,6 +9,7 @@ module.exports = app => {
     router.use('/rubros', auth.verifyAuthentication, require('./controllers/rubro'));
     router.use('/marcas', auth.verifyAuthentication, require('./controllers/marca'));
     router.use('/salidas', auth.verifyAuthentication, require('./controllers/salida'));
+    router.use('/cuentacorriente', auth.verifyAuthentication, require('./controllers/cuentacorriente'));
     router.use('/uploads', auth.verifyAuthentication, require('./controllers/uploader'));
     app.use('/api/v1/', router);
 };
