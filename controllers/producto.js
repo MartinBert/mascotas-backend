@@ -85,10 +85,8 @@ router.put('/', (request, response) => {
 });
 
 router.delete('/:id', (request, response) => {
-    Model.remove({_id: request.params.id}, (error) => {
-        if(error){
-            return response.status(500).send(errorResponse(error));
-        }
+    Model.deleteOne({_id: request.params.id}, (error) => {
+        if(error) return response.status(500).send(errorResponse(error));
         return response.status(200).send(successResponse);
     })
 });
