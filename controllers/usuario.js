@@ -63,6 +63,7 @@ router.get('/name/:name', (request, response) => {
 
 //Update user
 router.put('/:id', (request, response) => {
+    console.log(request.body);
     let item = new Model(request.body);
     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
         if (error) return response.status(500).json(errorResponse(error));
