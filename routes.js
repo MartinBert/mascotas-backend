@@ -14,5 +14,6 @@ module.exports = app => {
     router.use('/documentos', auth.verifyAuthentication, require('./controllers/documento'));
     router.use('/mediospago', auth.verifyAuthentication, require('./controllers/mediopago'));
     router.use('/uploads', auth.verifyAuthentication, require('./controllers/uploader'));
+    router.use('/genericos', auth.verifyAuthentication, require('./controllers/genericos'));
     app.use('/api/v1/', router);
 };
