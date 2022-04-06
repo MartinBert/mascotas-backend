@@ -10,6 +10,7 @@ module.exports = app => {
     router.use('/rubros', auth.verifyAuthentication, require('./controllers/rubro'));
     router.use('/marcas', auth.verifyAuthentication, require('./controllers/marca'));
     router.use('/salidas', auth.verifyAuthentication, require('./controllers/salida'));
+    router.use('/entradas', auth.verifyAuthentication, require('./controllers/entrada'));
     router.use('/cuentacorriente', auth.verifyAuthentication, require('./controllers/cuentacorriente'));
     router.use('/documentos', auth.verifyAuthentication, require('./controllers/documento'));
     router.use('/mediospago', auth.verifyAuthentication, require('./controllers/mediopago'));
