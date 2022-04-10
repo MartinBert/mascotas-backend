@@ -15,15 +15,6 @@ const successResponse = {
     message: 'OK'
 }
 
-const successWithItems = (items) => {
-    return {
-        code: 200,
-        message: 'OK',
-        data: items
-    }
-}
-
-
 router.post('/', (request, response) => {
     let item = new Model(request.body);
     item.save((error) => {
