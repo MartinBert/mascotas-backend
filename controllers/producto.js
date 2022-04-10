@@ -65,7 +65,8 @@ router.get('/', (request, response) => {
     Model.paginate((query !== null) ? query : {}, {
         page,
         limit,
-        populate: ['rubro', 'marca', 'imagenes']
+        populate: ['rubro', 'marca', 'imagenes'],
+        sort: {'_id': -1}
     }, (error, items) => {
         if (error) {
             return response.status(500).send(errorResponse(error));
