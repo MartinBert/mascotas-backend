@@ -43,7 +43,7 @@ router.get('/', (request, response) => {
     const query = JSON.parse(filters);
 
     if(query && Object.keys(query).length > 0){
-        query['descripcion'] = new RegExp(query['descripcion'], 'i');
+        query.descripcion = new RegExp(query.descripcion, 'i');
     }
 
     Model.paginate(query, {
