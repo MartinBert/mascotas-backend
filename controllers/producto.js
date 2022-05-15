@@ -85,6 +85,21 @@ router.put('/', (request, response) => {
     });
 });
 
+router.put('/modifyStock', (request, response) => {
+    const item = request.body.product;
+    const action = request.body.action;
+    const quantity = request.body.quantity;
+
+    item.cantidadStock = (action === 'increase') ? item.cantidadStock + quantity : item.cantidadStock - quantity;
+    
+    Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error) => {
+        if (error) {
+            return response.status(500).send(errorResponse(error));
+        }
+        return response.status(200).send(successResponse);
+    });
+})
+
 router.delete('/:id', (request, response) => {
     Model.deleteOne({_id: request.params.id}, (error) => {
         if(error) return response.status(500).send(errorResponse(error));

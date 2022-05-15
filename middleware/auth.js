@@ -33,8 +33,8 @@ const authController = {
     login(req, res) {
         const { email, password } = req.body;
         User.findOne({ email }, (error, user) => {
-            if(error) return res.status(500).send(500, error);
-            if(!user) return res.status(401).send(401, 'Invalid mail');
+            if(error) return res.status(500).send(errorResponse(500, error));
+            if(!user) return res.status(401).send(errorResponse(401, 'Invalid mail'));
             validateCredentials(user, password)
             .then(token => {
                 if(token) {
