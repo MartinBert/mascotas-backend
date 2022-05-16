@@ -87,10 +87,10 @@ router.put('/', (request, response) => {
 
 router.put('/modifyStock', (request, response) => {
     const item = request.body.product;
-    const action = request.body.action;
+    const isIncrement = request.body.isIncrement;
     const quantity = request.body.quantity;
 
-    item.cantidadStock = (action === 'increase') ? item.cantidadStock + quantity : item.cantidadStock - quantity;
+    item.cantidadStock = (isIncrement) ? item.cantidadStock + quantity : item.cantidadStock - quantity;
     
     Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error) => {
         if (error) {
