@@ -16,7 +16,11 @@ const schema = new Schema({
     cantidad: {
         type: Number,
         required: true
-    },  
+    },
+    costoTotal: {
+        type: Number,
+        required: true
+    },
     productos: [{ type: Object }],   
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
