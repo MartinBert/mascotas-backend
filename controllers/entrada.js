@@ -41,6 +41,11 @@ router.get('/:id', (request, response) => {
 router.get('/', (request, response) => {
     const {page, limit, filters} = request.query;
     const query = JSON.parse(filters);
+    
+    if(query && Object.keys(query).length > 0){
+        query.descripcion = new RegExp(query.descripcion, 'i');
+    }
+
     Model.paginate(query, {
         page,
         limit,
