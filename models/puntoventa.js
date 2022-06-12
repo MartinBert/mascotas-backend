@@ -6,26 +6,15 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 
 const schema = new Schema({
     nombre: {
-        type: String
-    },
-    email: {
-        type: String,
-        unique: true,
-        required: true
-    },
-    password: {
         type: String,
         required: true
     },
-    perfil:{
-        type: Boolean //true super admin, false admin.
+    numero: {
+        type: Number,
+        required: true
     },
-    empresa:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'empresa'
-    }
 }, { timestamps: true });
 
 schema.plugin(mongoosePaginate);
 
-module.exports = mongoose.model('usuario', schema);
+module.exports = mongoose.model('puntoventa', schema);

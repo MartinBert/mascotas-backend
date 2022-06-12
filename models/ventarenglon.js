@@ -1,0 +1,46 @@
+const mongoose = require('mongoose');
+const Schema   = mongoose.Schema;
+const mongoosePaginate = require('mongoose-paginate-v2');
+
+const schema = new Schema({
+    productoNombre:{
+        type: Number,
+        required: true
+    },
+    productoCodigoBarras:{
+        type: String,
+        required: true
+    },
+    productoPrecioUnitario:{
+        type: Number,
+        required: true
+    },
+    cantidadUnidades:{
+        type: Number,
+        required: true
+    },
+    porcentajeDescuentoRenglon:{
+        type: Number,
+        required: true
+    },
+    importeDescuentoRenglon:{
+        type: Number,
+        required: true
+    },
+    porcentajeRecargoRenglon:{
+        type: Number,
+        required: true
+    },
+    importeRecargoRenglon:{
+        type: Number,
+        required: true
+    },
+    totalRenglon:{
+        type: Number,
+        required: true
+    },
+}, { timestamps: true });
+
+schema.plugin(mongoosePaginate);
+
+module.exports = mongoose.model('ventarenglon', schema);
