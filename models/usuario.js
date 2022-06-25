@@ -23,6 +23,10 @@ const schema = new Schema({
     empresa:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'empresa'
+    },
+    puntoVenta:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'puntoventa'
     }
 }, { timestamps: true });
 

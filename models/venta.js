@@ -135,8 +135,8 @@ const schema = new Schema({
         type: String,
         required: true
     },
-    clienteDireccion:{
-        type: String,
+    puntoVentaNumero: {
+        type: Number,
         required: true
     },
     puntoVentaNombre:{

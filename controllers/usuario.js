@@ -30,7 +30,13 @@ router.post('/', (request, response) => {
 
 //Get user by id
 router.get('/:id', (request, response) => {
-    Model.findById(request.params.id).exec((error, item) => {
+    Model.findById(request.params.id)
+    .populate({
+        path: 'empresa',
+        populate: ['condicionFiscal']
+    })
+    .populate('puntoVenta')
+    .exec((error, item) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(item);
     });
@@ -55,6 +61,7 @@ router.get('/name/:name', (request, response) => {
     Model.paginate({nombre: new RegExp(request.params.name)}, {
         page: 0,
         limit: 10,
+        populate: ['empresa', 'puntoVenta']
     }, (error, items) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(items);

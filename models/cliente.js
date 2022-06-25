@@ -14,8 +14,8 @@ const schema = new Schema({
         required: true
     },
     condicionFiscal: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'condicionfiscal'
     },
     email: {
         type: String,
