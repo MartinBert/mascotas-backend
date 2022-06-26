@@ -59,14 +59,6 @@ const schema = new Schema({
         type: Number,
         required: true
     },
-    descuentosLinea:{
-        type: Object,
-        required: true
-    },
-    recargosLinea:{
-        type: Object,
-        required: true
-    },
     totalDescuentoLineas:{
         type: Number,
         required: true
