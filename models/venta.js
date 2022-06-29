@@ -67,10 +67,6 @@ const schema = new Schema({
         type: Number,
         required: true
     },
-    porcentajeIva:{
-        type: Number,
-        required: true
-    },
     importeIva:{
         type: Number,
         required: true

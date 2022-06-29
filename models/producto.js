@@ -24,25 +24,50 @@ const schema = new Schema({
     rubro: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'rubro'
-    },   
+    },
+    unidadMedida: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'unidadmedida'
+    },
+    cantidadFraccionadaStock: {
+        type: Number,
+        required: true
+    },
     cantidadStock: {
         type: Number,
         required: true
     },
     precioUnitario: {
         type: Number,
+        required: true
     },
     margenGanancia: {
         type: Number,
+        required: true
     },
     precioVenta: {
         type: Number,
+        required: true
     },
     gananciaNeta: {
         type: Number,
+        required: true
     },
-    iva: {
+    porcentajeIvaCompra: {
         type: Number,
+        required: true
+    },
+    ivaCompra: {
+        type: Number,
+        required: true
+    },
+    porcentajeIvaVenta: {
+        type: Number,
+        required: true
+    },
+    ivaVenta: {
+        type: Number,
+        required: true
     },
     imagenes:[{
         type: mongoose.Schema.Types.ObjectId,

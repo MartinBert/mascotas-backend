@@ -15,6 +15,14 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+    productoPorcentajeIva: {
+        type: Number,
+        required: true
+    },
+    productoImporteIva: {
+        type: Number,
+        required: true
+    },
     cantidadUnidades:{
         type: Number,
         required: true

@@ -89,8 +89,30 @@ router.put('/modifyStock', (request, response) => {
     const item = request.body.product;
     const isIncrement = request.body.isIncrement;
     const quantity = request.body.quantity;
+    const fractionedQuantity = request.body.fractionedQuantity;
 
-    item.cantidadStock = (isIncrement) ? item.cantidadStock + quantity : item.cantidadStock - quantity;
+    if(quantity){
+        item.cantidadStock = (isIncrement) ? item.cantidadStock + quantity : item.cantidadStock - quantity;
+    }else{
+        item.cantidadFraccionadaStock = (isIncrement) 
+            ? item.cantidadFraccionadaStock + fractionedQuantity 
+            : item.cantidadFraccionadaStock - fractionedQuantity; 
+        
+        if(item.cantidadFraccionadaStock === 0){
+            item.cantidadStock -= 1;
+            item.cantidadFraccionadaStock = item.unidadMedida.fraccionamiento;
+        }
+
+        if(item.cantidadFraccionadaStock < 0){
+            item.cantidadStock -= 1;
+            item.cantidadFraccionadaStock = item.unidadMedida.fraccionamiento + item.cantidadFraccionadaStock;
+        }
+
+        if(item.cantidadFraccionadaStock > item.unidadMedida.fraccionamiento){
+            item.cantidadStock += 1;
+            item.cantidadFraccionadaStock = item.cantidadFraccionadaStock - item.unidadMedida.fraccionamiento;
+        }
+    }
     
     Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error) => {
         if (error) {

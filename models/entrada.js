@@ -21,6 +21,7 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+    // A productos se le agrega el campo cantidadesEntrantes
     productos: [{ type: Object }],   
     usuario: {
         type: mongoose.Schema.Types.ObjectId,

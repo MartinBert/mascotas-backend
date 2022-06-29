@@ -7,6 +7,7 @@ module.exports = app => {
     router.use('/usuarios', auth.verifyAuthentication, require('./controllers/usuario'));
     router.use('/clientes', auth.verifyAuthentication, require('./controllers/cliente'));
     router.use('/productos', auth.verifyAuthentication, require('./controllers/producto'));
+    router.use('/unidadesmedida', auth.verifyAuthentication, require('./controllers/unidadmedida'));
     router.use('/ventas', auth.verifyAuthentication, require('./controllers/venta'));
     router.use('/empresas', auth.verifyAuthentication, require('./controllers/empresa'));
     router.use('/puntosventa', auth.verifyAuthentication, require('./controllers/puntoventa'));
