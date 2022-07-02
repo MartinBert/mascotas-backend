@@ -11,6 +11,22 @@ const schema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ventarenglon'
     }],
+    mediosPago:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'mediopago'
+    }],
+    mediosPagoNombres: [{
+        type: String,
+        required: true
+    }],
+    planesPago:[{
+        type: Object,
+        required: true
+    }],
+    planesPagoNombres:[{
+        type: String,
+        required: true
+    }],
     documento:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'documento'
