@@ -16,7 +16,7 @@ const successResponse = {
     message: 'OK'
 }
 
-//Save new cliente
+//Save new mediopago
 router.post('/', (request, response) => {
     let item = new Model(request.body);
     item.save((error) => {
@@ -27,7 +27,7 @@ router.post('/', (request, response) => {
     });
 });
 
-//Get cliente by id
+//Get mediopago by id
 router.get('/:id', (request, response) => {
     Model.findById(request.params.id).exec((error, item) => {
         if (error) return response.status(500).json(errorResponse(error));
@@ -35,7 +35,7 @@ router.get('/:id', (request, response) => {
     });
 });
 
-//Get clientes list
+//Get mediospago list
 router.get('/', (request, response) => {
     const {page, limit, filters} = request.query;
     const query = JSON.parse(filters);
@@ -48,7 +48,18 @@ router.get('/', (request, response) => {
     })
 });
 
-//Update cliente
+//Get mediospago list id
+router.get('/multiple/idList', (request, response) => {
+    const {ids} = request.query;
+    const query = {_id: {$in: JSON.parse(ids)}};
+    Model.find(query, (error, items) => {
+        console.log(items);
+        if (error) return response.status(500).json(errorResponse(error));
+        return response.status(200).json(items);
+    })
+});
+
+//Update mediopago
 router.put('/:id', (request, response) => {
     let item = new Model(request.body);
     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
@@ -57,7 +68,7 @@ router.put('/:id', (request, response) => {
     });
 });
 
-//Delete cliente
+//Delete mediopago
 router.delete('/:id', (request, response) => {
     Model.deleteOne({_id: request.params.id}, (error) => {
         if (error) return response.status(500).json(errorResponse(error));

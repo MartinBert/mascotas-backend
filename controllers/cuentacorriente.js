@@ -46,6 +46,16 @@ router.get('/', (request, response) => {
     })
 });
 
+//Get cuentascorrientes list id
+router.get('/multiple/idList', (request, response) => {
+    const {ids} = request.query;
+    const query = {_id: {$in: JSON.parse(ids)}};
+    Model.find(query, (error, items) => {
+        console.log(items);
+        if (error) return response.status(500).json(errorResponse(error));
+        return response.status(200).json(items);
+    })
+});
 
 router.put('/:id', (request, response) => {
     let item = new Model(request.body);

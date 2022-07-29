@@ -75,6 +75,17 @@ router.get('/', (request, response) => {
     })
 });
 
+//Get productos list id
+router.get('/multiple/idList', (request, response) => {
+    const {ids} = request.query;
+    const query = {_id: {$in: JSON.parse(ids)}};
+    Model.find(query, (error, items) => {
+        console.log(items);
+        if (error) return response.status(500).json(errorResponse(error));
+        return response.status(200).json(items);
+    })
+});
+
 router.put('/', (request, response) => {
     let item = new Model(request.body);
     Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error) => {

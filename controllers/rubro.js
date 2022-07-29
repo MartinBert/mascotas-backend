@@ -49,6 +49,17 @@ router.get('/', (request, response) => {
     })
 });
 
+//Get rubros list id
+router.get('/multiple/idList', (request, response) => {
+    const {ids} = request.query;
+    const query = {_id: {$in: JSON.parse(ids)}};
+    Model.find(query, (error, items) => {
+        console.log(items);
+        if (error) return response.status(500).json(errorResponse(error));
+        return response.status(200).json(items);
+    })
+});
+
 //Get rubros by name
 router.get('/name/:name', (request, response) => {
     console.log(request.params.name);
