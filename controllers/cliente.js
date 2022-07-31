@@ -29,7 +29,7 @@ router.post('/', (request, response) => {
 
 //Get cliente by id
 router.get('/:id', (request, response) => {
-    Model.findById(request.params.id).exec((error, item) => {
+    Model.findById(request.params.id).populate('condicionFiscal').exec((error, item) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(item);
     });
@@ -42,6 +42,7 @@ router.get('/', (request, response) => {
     Model.paginate((query) ? {razonSocial: new RegExp(query.razonSocial, 'i')} : {}, {
         page,
         limit,
+        populate: ['condicionFiscal']
     }, (error, items) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(items);
