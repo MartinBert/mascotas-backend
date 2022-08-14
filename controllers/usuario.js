@@ -33,7 +33,7 @@ router.get('/:id', (request, response) => {
     Model.findById(request.params.id)
     .populate({
         path: 'empresa',
-        populate: ['condicionFiscal']
+        populate: ['condicionFiscal', 'logo']
     })
     .populate('puntoVenta')
     .exec((error, item) => {
