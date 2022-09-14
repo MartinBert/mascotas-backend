@@ -13,6 +13,10 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    documentoReceptor: {
+        type: Number,
+        required: true
+    },
     condicionFiscal: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'condicionfiscal'
