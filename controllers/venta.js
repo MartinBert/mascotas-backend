@@ -44,7 +44,7 @@ router.get('/', (request, response) => {
     Model.paginate((query) ? {nombre: new RegExp(query.nombre, 'i')} : {}, {
         page,
         limit,
-        populate: ['renglones']
+        populate: ['renglones', 'documento']
     }, (error, items) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(items);
