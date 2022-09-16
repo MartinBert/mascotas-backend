@@ -23,6 +23,14 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+    productoFraccionamiento: {
+        type: Number,
+        required: true
+    },
+    fraccionar: {
+        type: Boolean,
+        required: true
+    },
     cantidadUnidades:{
         type: Number,
         required: true
