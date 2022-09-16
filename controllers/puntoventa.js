@@ -53,7 +53,6 @@ router.get('/multiple/idList', (request, response) => {
     const {ids} = request.query;
     const query = {_id: {$in: JSON.parse(ids)}};
     Model.find(query, (error, items) => {
-        console.log(items);
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(items);
     })
@@ -61,7 +60,6 @@ router.get('/multiple/idList', (request, response) => {
 
 //Get puntoventas by name
 router.get('/name/:name', (request, response) => {
-    console.log(request.params.name);
     Model.paginate({nombre: new RegExp(request.params.name, 'i')}, {
         page: 0,
         limit: 10,

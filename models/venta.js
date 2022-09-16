@@ -24,7 +24,7 @@ const schema = new Schema({
         required: true
     },
     documentoCodigo:{
-        type: Boolean,
+        type: String,
         required: true
     },
     empresa:{

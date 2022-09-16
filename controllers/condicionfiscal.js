@@ -50,7 +50,6 @@ router.get('/', (request, response) => {
 
 //Get condicionesfiscales list id
 router.get('/multiple/idList', (request, response) => {
-    console.log(request.query)
     const {ids} = request.query;
     const query = {_id: {$in: JSON.parse(ids)}};
     Model.find(query, (error, items) => {
@@ -62,7 +61,6 @@ router.get('/multiple/idList', (request, response) => {
 
 //Get condicionfiscals by name
 router.get('/name/:name', (request, response) => {
-    console.log(request.params.name);
     Model.paginate({nombre: new RegExp(request.params.name, 'i')}, {
         page: 0,
         limit: 10,
