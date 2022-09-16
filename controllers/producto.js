@@ -36,6 +36,7 @@ router.get('/:id', (request, response) => {
     .populate('imagenes')
     .populate('marca')
     .populate('rubro')
+    .populate('unidadMedida')
     .exec((error, item) => {
         if (error) return response.status(500).send(errorResponse(error));
         return response.status(200).send(successWithItems(item));
@@ -65,7 +66,7 @@ router.get('/', (request, response) => {
     Model.paginate((query !== null) ? query : {}, {
         page,
         limit,
-        populate: ['rubro', 'marca', 'imagenes'],
+        populate: ['rubro', 'marca', 'imagenes', 'unidadMedida'],
         sort: {'_id': -1}
     }, (error, items) => {
         if (error) {
