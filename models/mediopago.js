@@ -18,7 +18,7 @@ const schema = new Schema({
     planes:[{
         type: Object,
         required: true
-    }]
+    }] //_id, nombre, cuotas, porcentaje
 }, { timestamps: true });
 
 schema.plugin(mongoosePaginate);
