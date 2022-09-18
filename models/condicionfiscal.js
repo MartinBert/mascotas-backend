@@ -8,9 +8,6 @@ const schema = new Schema({
     nombre: {
         type: String
     },
-    porcentajeIva: {
-        type: Number,
-    },
     adicionaIva: {
         type: Boolean
     }

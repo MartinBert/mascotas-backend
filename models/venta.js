@@ -7,6 +7,11 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+    usuario:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'usuario',
+        required: true
+    },
     productos:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'producto',

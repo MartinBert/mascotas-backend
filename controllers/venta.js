@@ -53,6 +53,10 @@ router.get('/:id', (request, response) => {
             path: 'documento',
             model: 'documento'
         },
+        {
+            path: 'usuario',
+            model: 'usuario'
+        }
     ])
     .exec((error, item) => {
         if (error) return response.status(500).json(errorResponse(error));
@@ -78,7 +82,7 @@ router.get('/', (request, response) => {
     Model.paginate((query) ? {nombre: new RegExp(query.nombre, 'i')} : {}, {
         page,
         limit,
-        populate: ['renglones', 'documento'],
+        populate: ['renglones', 'documento', 'usuario'],
         sort: '-indice'
     }, (error, items) => {
         if (error) return response.status(500).json(errorResponse(error));
@@ -101,6 +105,10 @@ router.get('/multiple/idList', (request, response) => {
             path: 'documento',
             model: 'documento'
         },
+        {
+            path: 'usuario',
+            model: 'usuario'
+        }
     ])
     .exec((error, items) => {
         if (error) return response.status(500).json(errorResponse(error));
