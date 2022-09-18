@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const Schema = mongoose.Schema;
 const mongoosePaginate = require('mongoose-paginate-v2');
 
 const schema = new Schema({
     productoNombre:{
-        type: Number,
+        type: String,
         required: true
     },
     productoCodigoBarras:{

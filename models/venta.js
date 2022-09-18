@@ -1,19 +1,26 @@
 const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const Schema = mongoose.Schema;
 const mongoosePaginate = require('mongoose-paginate-v2');
 
 const schema = new Schema({
+    indice:{
+        type: Number,
+        required: true
+    },
     productos:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'producto'
+        ref: 'producto',
+        required: true
     }],
     renglones:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'ventarenglon'
+        ref: 'ventarenglon',
+        required: true
     }],
     documento:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'documento'
+        ref: 'documento',
+        required: true
     },
     documentoLetra:{
         type: String,
@@ -29,7 +36,8 @@ const schema = new Schema({
     },
     empresa:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'empresa'
+        ref: 'empresa', 
+        required: true
     },
     empresaRazonSocial:{
         type: String,
@@ -61,7 +69,8 @@ const schema = new Schema({
     },
     puntoVenta:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'puntoventa'
+        ref: 'puntoventa',
+        required: true
     },
     puntoVentaNumero: {
         type: Number,
@@ -85,7 +94,8 @@ const schema = new Schema({
     },
     cliente:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'cliente'
+        ref: 'cliente',
+        required: true
     },
     clienteRazonSocial:{
         type: String,
@@ -109,7 +119,8 @@ const schema = new Schema({
     },
     mediosPago:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'mediopago'
+        ref: 'mediopago',
+        required: true
     }],
     mediosPagoNombres: [{
         type: String,
