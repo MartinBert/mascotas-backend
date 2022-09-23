@@ -38,14 +38,7 @@ router.get('/:id', (request, response) => {
     .populate('puntoVenta')
     .exec((error, item) => {
         if (error) return response.status(500).json(errorResponse(error));
-        const user = {
-            perfil: item.perfil,
-            empresa: item.empresa,
-            puntoVenta: item.puntoVenta,
-            email: item.email,
-            nombre: item.nombre
-        }
-        return response.status(200).json(user);
+        return response.status(200).json(item);
     });
 });
 

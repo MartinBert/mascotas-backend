@@ -149,11 +149,9 @@ const schema = new Schema({
     },
     cae:{
         type: String,
-        required: true
     },
     vencimientoCae:{
         type: String,
-        required: true
     },
     porcentajeDescuentoGlobal:{
         type: Number,

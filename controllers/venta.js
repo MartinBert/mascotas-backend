@@ -75,6 +75,16 @@ router.get('/last/index/number', (request, response) => {
     })
 });
 
+router.get('/last/voucher/number/:code', (request, response) => {
+    Model
+    .findOne({documentoCodigo: request.params.code})
+    .sort('-indice')
+    .exec((error, item) => {
+        if (error) return response.status(500).json(errorResponse(error));
+        return response.status(200).json((item) ? item.numeroFactura : 0);
+    })
+})
+
 //Get ventas list
 router.get('/', (request, response) => {
     const {page, limit, filters} = request.query;
