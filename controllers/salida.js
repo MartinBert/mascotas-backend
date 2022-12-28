@@ -5,7 +5,7 @@ const router  = express.Router();
 const errorResponse = (error) => {
     return {
         code: 500,
-        message: "Error",
+        message: 'Error',
         printStackTrace: error
     }
 }

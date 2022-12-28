@@ -6,7 +6,7 @@ const router  = express.Router();
 const errorResponse = (error) => {
     return {
         code: 500,
-        message: "Error",
+        message: 'Error',
         printStackTrace: error
     }
 }
@@ -18,14 +18,31 @@ const successResponse = {
 
 //Save new cliente
 router.post('/', (request, response) => {
-    let item = new Model(request.body);
+    let item = new Model(request.body)
     item.save((error) => {
         if (error) {
-            return response.status(500).json(errorResponse(error));
+            return response.status(500).json(errorResponse(error))
         }
-        return response.status(200).json(successResponse);
-    });
-});
+        return response.status(200).json(successResponse)
+    })
+})
+
+//Update cliente
+router.put('/:id', (request, response) => {
+    let item = new Model(request.body)
+    Model.findOneAndUpdate({_id: request.body._id}, item, { new: true }, (error) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(successResponse)
+    })
+})
+
+//Delete cliente
+router.delete('/:id', (request, response) => {
+    Model.deleteOne({_id: request.params.id}, (error) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(successResponse)
+    })
+})
 
 //Get cliente by id
 router.get('/:id', (request, response) => {
@@ -57,24 +74,6 @@ router.get('/multiple/idList', (request, response) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(items);
     })
-});
-
-
-//Update cliente
-router.put('/:id', (request, response) => {
-    let item = new Model(request.body);
-    Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(successResponse);
-    });
-});
-
-//Delete cliente
-router.delete('/:id', (request, response) => {
-    Model.deleteOne({_id: request.params.id}, (error) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(successResponse);
-    });
 });
 
 module.exports = router;

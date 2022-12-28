@@ -73,12 +73,12 @@ const authController = {
 
 const validateCredentials = async (user, password) => {
     let token = null;
-    const match = (password === user.password) ? "valid" : null;
+    const match = (password === user.password) ? 'valid' : null;
     if (match) {
         token = jwt.sign(
             {
-                "email": user.email,
-                "password": user.password
+                'email': user.email,
+                'password': user.password
             },
             private_key, { algorithm: 'RS256' }
         )

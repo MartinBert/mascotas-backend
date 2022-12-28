@@ -5,7 +5,7 @@ const router  = express.Router();
 const errorResponse = (error) => {
     return {
         code: 500,
-        message: "Error",
+        message: 'Error',
         printStackTrace: error
     }
 }
@@ -22,6 +22,15 @@ router.post('/', (request, response) => {
         if (error) {
             return response.status(500).json(errorResponse(error));
         }
+        return response.status(200).json(successResponse);
+    });
+});
+
+//Update documento
+router.put('/:id', (request, response) => {
+    let item = new Model(request.body);
+    Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
+        if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(successResponse);
     });
 });
@@ -55,15 +64,6 @@ router.get('/multiple/idList', (request, response) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(items);
     })
-});
-
-//Update documento
-router.put('/:id', (request, response) => {
-    let item = new Model(request.body);
-    Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(successResponse);
-    });
 });
 
 //Delete documento

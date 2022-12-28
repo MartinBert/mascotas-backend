@@ -2,11 +2,11 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const helmet = require("helmet");
+const helmet = require('helmet');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const compression = require('compression');
-const config = require("./config/index");
+const config = require('./config/index');
 const passport = require('passport');
 const cors = require('cors');
 const app = express();

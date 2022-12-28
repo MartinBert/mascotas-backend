@@ -9,7 +9,7 @@ const fs = require('fs')
 const errorResponse = (error) => {
     return {
         code: 500,
-        message: "Error",
+        message: 'Error',
         printStackTrace: error
     }
 }
