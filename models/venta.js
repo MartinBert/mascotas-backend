@@ -153,27 +153,19 @@ const schema = new Schema({
     vencimientoCae:{
         type: String,
     },
-    porcentajeDescuentoGlobal:{
-        type: Number,
-        required: true
-    },
     porcentajeRecargoGlobal:{
         type: Number,
-        required: true
+        required: false
+    },
+    porcentajeDescuentoGlobal:{
+        type: Number,
+        required: false
     },
     totalDescuento:{
         type: Number,
         required: true
     },
     totalRecargo:{
-        type: Number,
-        required: true
-    },
-    totalDescuentoLineas:{
-        type: Number,
-        required: true
-    },
-    totalRecargoLineas:{
         type: Number,
         required: true
     },

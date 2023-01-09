@@ -3,27 +3,27 @@ const Schema = mongoose.Schema;
 const mongoosePaginate = require('mongoose-paginate-v2');
 
 const schema = new Schema({
-    productoNombre:{
+    nombre:{
         type: String,
         required: true
     },
-    productoCodigoBarras:{
+    codigoBarras:{
         type: String,
         required: true
     },
-    productoPrecioUnitario:{
+    precioUnitario:{
         type: Number,
         required: true
     },
-    productoPorcentajeIva: {
+    porcentajeIva: {
         type: Number,
         required: true
     },
-    productoImporteIva: {
+    importeIva: {
         type: Number,
         required: true
     },
-    productoFraccionamiento: {
+    fraccionamiento: {
         type: Number,
         required: true
     },
@@ -35,23 +35,47 @@ const schema = new Schema({
         type: Number,
         required: true
     },
-    porcentajeDescuentoRenglon:{
+    cantidadQuitadaPorRecargo_enKg:{
         type: Number,
-        required: true
+        required: false
     },
-    importeDescuentoRenglon:{
+    cantidadAgregadaPorDescuento_enKg:{
         type: Number,
-        required: true
+        required: false
+    },
+    cantidadKg:{
+        type: Number,
+        required: false
+    },
+    cantidadg:{
+        type: Number,
+        required: false
     },
     porcentajeRecargoRenglon:{
         type: Number,
-        required: true
+        required: false
     },
-    importeRecargoRenglon:{
+    porcentajeDescuentoRenglon:{
+        type: Number,
+        required: false
+    },
+    recargo:{
         type: Number,
         required: true
     },
-    totalRenglon:{
+    descuento:{
+        type: Number,
+        required: true
+    },
+    precioNeto:{
+        type: Number,
+        required: true
+    },
+    precioNetoFijo:{
+        type: Boolean,
+        required: true
+    },
+    precioBruto:{
         type: Number,
         required: true
     },
