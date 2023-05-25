@@ -1,7 +1,7 @@
-const keys = require('../services/certificates');
-const User = require('../models/usuario');
-const jwt = require('jsonwebtoken');
-const { private_key, public_key } = keys;
+const keys = require('../services/certificates')
+const User = require('../models/usuario')
+const jwt = require('jsonwebtoken')
+const { private_key, public_key } = keys
 
 const errorResponse = (code, error) => {
     return {
@@ -31,16 +31,16 @@ const errorResponseAuthorization = (code, error) => {
 
 const authController = {
     login(req, res) {
-        const { email, password } = req.body;
+        const { email, password } = req.body
         User.findOne({ email }, (error, user) => {
-            if(error) return res.status(500).send(errorResponse(500, error));
-            if(!user) return res.status(401).send(errorResponse(401, 'Invalid mail'));
+            if(error) return res.status(500).send(errorResponse(500, error))
+            if(!user) return res.status(401).send(errorResponse(401, 'Invalid mail'))
             validateCredentials(user, password)
             .then(token => {
                 if(token) {
                     return res.status(200).send(successResponseWithToken(token, user._id))
                 } else {
-                    return res.status(401).send(errorResponse(401, 'Invalid credentials'));
+                    return res.status(401).send(errorResponse(401, 'Invalid credentials'))
                 }
             })
 
@@ -48,32 +48,32 @@ const authController = {
     },
 
     verifyAuthentication(req, res, next) {
-        const token = req.headers.authorization;
+        const token = req.headers.authorization
         try {
             if(!token) return res.status(403).send({
                 authorized: false
             })
             jwt.verify(token, public_key, { algorithms: ['RS256'] }, (err, loggedUser) => {
-                if(err) return res.status(401).send(errorResponseAuthorization(401, err));
-                const { email, password } = loggedUser;
+                if(err) return res.status(401).send(errorResponseAuthorization(401, err))
+                const { email, password } = loggedUser
                 User.findOne({ email }, (error, user) => {
-                    if(error) return res.status(500).send(errorResponseAuthorization(500, error));
+                    if(error) return res.status(500).send(errorResponseAuthorization(500, error))
                     if (user.password === password) {
-                        next();
+                        next()
                     } else {
-                        return res.status(401).send(errorResponseAuthorization(401, 'Unauthorized'));
+                        return res.status(401).send(errorResponseAuthorization(401, 'Unauthorized'))
                     }
                 })
             })
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
     }
 }
 
 const validateCredentials = async (user, password) => {
-    let token = null;
-    const match = (password === user.password) ? 'valid' : null;
+    let token = null
+    const match = (password === user.password) ? 'valid' : null
     if (match) {
         token = jwt.sign(
             {
@@ -83,7 +83,7 @@ const validateCredentials = async (user, password) => {
             private_key, { algorithm: 'RS256' }
         )
     } 
-    return token;
+    return token
 }
 
-module.exports = authController;
+module.exports = authController

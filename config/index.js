@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = {
     // Local -- test
@@ -16,4 +16,4 @@ module.exports = {
         port: '5004'
     },
     Socket:{}
-};
+}
