@@ -24,8 +24,8 @@ router.post('/', (request, response) => {
             return response.status(500).json(errorResponse(error));
         }
         return response.status(200).json(successResponse);
-    });
-});
+    })
+})
 
 //Get empresa by id
 router.get('/:id', (request, response) => {
@@ -36,8 +36,8 @@ router.get('/:id', (request, response) => {
     .exec((error, item) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(item);
-    });
-});
+    })
+})
 
 //Get empresas list
 router.get('/', (request, response) => {
@@ -51,7 +51,7 @@ router.get('/', (request, response) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(items);
     })
-});
+})
 
 //Get empresas list id
 router.get('/multiple/idList', (request, response) => {
@@ -61,7 +61,7 @@ router.get('/multiple/idList', (request, response) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(items);
     })
-});
+})
 
 //Get empresas by name
 router.get('/name/:name', (request, response) => {
@@ -72,7 +72,7 @@ router.get('/name/:name', (request, response) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(items);
     })
-});
+})
 
 //Update empresa
 router.put('/:id', (request, response) => {
@@ -80,15 +80,15 @@ router.put('/:id', (request, response) => {
     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(successResponse);
-    });
-});
+    })
+})
 
 //Delete empresa
 router.delete('/:id', (request, response) => {
     Model.deleteOne({_id: request.params.id}, (error) => {
         if (error) return response.status(500).json(errorResponse(error));
         return response.status(200).json(successResponse);
-    });
-});
+    })
+})
 
 module.exports = router;

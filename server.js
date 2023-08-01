@@ -28,6 +28,9 @@ io.on('connection', function(socket){
 })
 
 http.listen(config.port, () => {
+
+    mongoose.set('strictQuery', true)
+    
     mongoose.connection.on('error', error => {
         console.log('Error trying to connect with mongo: ', error)
         process.exit(1)
@@ -44,8 +47,6 @@ http.listen(config.port, () => {
 
     mongoose.connect(config.database, {
         useNewUrlParser: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
         useUnifiedTopology: true
     })
 })

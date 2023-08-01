@@ -1,7 +1,7 @@
-'use strict';
-const express = require('express');
-const Model   = require('../models/cliente');
-const router  = express.Router();
+'use strict'
+const express = require('express')
+const Model   = require('../models/cliente')
+const router  = express.Router()
 
 const errorResponse = (error) => {
     return {
@@ -47,33 +47,33 @@ router.delete('/:id', (request, response) => {
 //Get cliente by id
 router.get('/:id', (request, response) => {
     Model.findById(request.params.id).populate('condicionFiscal').exec((error, item) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(item);
-    });
-});
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(item)
+    })
+})
 
 //Get clientes list
 router.get('/', (request, response) => {
-    const {page, limit, filters} = request.query;
-    const query = JSON.parse(filters);
+    const {page, limit, filters} = request.query
+    const query = JSON.parse(filters)
     Model.paginate((query) ? {razonSocial: new RegExp(query.razonSocial, 'i')} : {}, {
         page,
         limit,
         populate: ['condicionFiscal']
     }, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(items);
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(items)
     })
-});
+})
 
 //Get clientes list id
 router.get('/multiple/idList', (request, response) => {
-    const {ids} = request.query;
-    const query = {_id: {$in: JSON.parse(ids)}};
+    const {ids} = request.query
+    const query = {_id: {$in: JSON.parse(ids)}}
     Model.find(query, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(items);
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(items)
     })
-});
+})
 
-module.exports = router;
+module.exports = router
