@@ -1,7 +1,6 @@
 'use strict'
 const express = require('express')
 const Model = require('../models/venta')
-const ModelDocumento = require('../models/documento')
 const Renglon = require('../models/ventarenglon')
 const router = express.Router()
 
@@ -20,9 +19,10 @@ const successResponse = {
 
 //Save new venta
 router.post('/', (request, response) => {
+    console.log(request.body)
     const item = new Model(request.body)
     item.renglones = request.body.renglones.map(renglon => new Renglon(renglon))
-
+    
     const saveChildEntities = async () => {
         for (const renglon of item.renglones) {
             await renglon.save()

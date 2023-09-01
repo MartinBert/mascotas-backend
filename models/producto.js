@@ -16,7 +16,7 @@ const schema = new Schema({
     codigoBarras: {
         type: String,
         required: true
-    },   
+    },
     marca: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'marca'
