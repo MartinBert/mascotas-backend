@@ -19,7 +19,6 @@ const successResponse = {
 
 //Save new venta
 router.post('/', (request, response) => {
-    console.log(request.body)
     const item = new Model(request.body)
     item.renglones = request.body.renglones.map(renglon => new Renglon(renglon))
     

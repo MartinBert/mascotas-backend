@@ -205,6 +205,14 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+    totalDiferencia:{
+        type: Number,
+        required: true
+    },
+    totalRedondeado:{
+        type: Number,
+        required: true
+    },
 }, { timestamps: true });
 
 schema.plugin(mongoosePaginate);

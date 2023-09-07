@@ -7,6 +7,10 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    nota:{
+        type: String,
+        required: false
+    },
     codigoBarras:{
         type: String,
         required: true
