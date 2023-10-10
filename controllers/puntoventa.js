@@ -1,7 +1,11 @@
-'use strict';
-const express = require('express');
-const Model   = require('../models/puntoventa');
-const router  = express.Router();
+'use strict'
+const express = require('express')
+const Model   = require('../models/puntoventa')
+const router  = express.Router()
+const {
+    generateQuery,
+    paginationParams
+} = require('../helpers/controllersHelper')
 
 const errorResponse = (error) => {
     return {
@@ -16,74 +20,74 @@ const successResponse = {
     message: 'OK'
 }
 
-//Save new puntoventa
-router.post('/', (request, response) => {
-    let item = new Model(request.body);
-    item.save((error) => {
-        if (error) {
-            return response.status(500).json(errorResponse(error));
-        }
-        return response.status(200).json(successResponse);
-    });
-});
+// Delete sale point
+router.delete('/:id', (request, response) => {
+    Model.deleteOne({_id: request.params.id}, (error) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(successResponse)
+    })
+})
 
-//Get puntoventa by id
+// Get sale point list
+router.get('/', (request, response) => {
+    Model
+        .paginate(
+            generateQuery(request),
+            paginationParams(request),
+            (error, items) => {
+                if (error) return response.status(500).json(errorResponse(error))
+                return response.status(200).json(items)
+            }
+        )
+})
+
+// Get sale point by id
 router.get('/:id', (request, response) => {
     Model.findById(request.params.id).exec((error, item) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(item);
-    });
-});
-
-//Get puntoventas list
-router.get('/', (request, response) => {
-    const {page, limit, filters} = request.query;
-    const query = JSON.parse(filters);
-    Model.paginate((query) ? {nombre: new RegExp(query.nombre, 'i')} : {}, {
-        page,
-        limit,
-    }, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(items);
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(item)
     })
-});
+})
 
-//Get puntosventa list id
+// Get sale point list id
 router.get('/multiple/idList', (request, response) => {
-    const {ids} = request.query;
-    const query = {_id: {$in: JSON.parse(ids)}};
+    const {ids} = request.query
+    const query = {_id: {$in: JSON.parse(ids)}}
     Model.find(query, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(items);
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(items)
     })
-});
+})
 
-//Get puntoventas by name
+// Get sale point by name
 router.get('/name/:name', (request, response) => {
     Model.paginate({nombre: new RegExp(request.params.name, 'i')}, {
         page: 0,
         limit: 10,
     }, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(items);
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(items)
     })
-});
+})
 
-//Update puntoventa
+// Save new sale point
+router.post('/', (request, response) => {
+    let item = new Model(request.body)
+    item.save((error) => {
+        if (error) {
+            return response.status(500).json(errorResponse(error))
+        }
+        return response.status(200).json(successResponse)
+    })
+})
+
+// Update sale point
 router.put('/:id', (request, response) => {
-    let item = new Model(request.body);
+    let item = new Model(request.body)
     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(successResponse);
-    });
-});
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(successResponse)
+    })
+})
 
-//Delete puntoventa
-router.delete('/:id', (request, response) => {
-    Model.deleteOne({_id: request.params.id}, (error) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(successResponse);
-    });
-});
-
-module.exports = router;
+module.exports = router

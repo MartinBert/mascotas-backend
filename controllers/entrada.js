@@ -1,6 +1,11 @@
+'use strict'
 const express = require('express')
 const Model = require('../models/entrada')
 const router = express.Router()
+const {
+    generateQuery,
+    paginationParams
+} = require('../helpers/controllersHelper')
 
 const errorResponse = (error) => {
     return {
@@ -23,14 +28,32 @@ const successWithItems = (items) => {
     }
 }
 
-router.post('/', (request, response) => {
-    let item = new Model(request.body)
-    item.save((error, item) => {
-        if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(item))
+// Delete entry
+router.delete('/:id', (request, response) => {
+    Model.deleteOne({ _id: request.params.id }, (error) => {
+        if (error) {
+            return response.status(500).send(errorResponse(error))
+        }
+        return response.status(200).send(successResponse)
     })
 })
 
+//Get entries list
+router.get('/', (request, response) => {
+    const populateParams = ['usuario']
+    const sortParam = '_id'
+    Model
+        .paginate(
+            generateQuery(request),
+            paginationParams(request, populateParams, sortParam),
+            (error, items) => {
+                if (error) return response.status(500).json(errorResponse(error))
+                return response.status(200).json(items)
+            }
+        )
+})
+
+// Get entry by id
 router.get('/:id', (request, response) => {
     Model.findById(request.params.id).exec((error, item) => {
         if (error) return response.status(500).send(errorResponse(error))
@@ -38,35 +61,7 @@ router.get('/:id', (request, response) => {
     })
 })
 
-router.get('/', (request, response) => {
-    const { page, limit, filters, initialDate, finalDate } = request.query
-    const query = (filters) ? JSON.parse(filters) : null
-    if (query && Object.keys(query).length > 0) {
-        if (query.descripcion) query.descripcion = new RegExp(query.descripcion, 'i')
-    }
-
-    if (!page) {
-        Model
-            .find((initialDate) ? { fecha: { $gte: initialDate, $lte: finalDate } } : {})
-            .populate(['usuario'])
-            .exec((error, items) => {
-            if (error) return response.status(500).json(errorResponse(error))
-            return response.status(200).json(items)
-        })
-    } else {
-        Model.paginate(query, {
-            page,
-            limit,
-            populate: ['usuario'],
-            sort: { '_id': -1 }
-        }, (error, items) => {
-            if (error) return response.status(500).send(errorResponse(error))
-            return response.status(200).send(successWithItems(items))
-        })
-    }
-})
-
-//Get entradas list id
+// Get entries list id
 router.get('/multiple/idList', (request, response) => {
     const { ids } = request.query
     const query = { _id: { $in: JSON.parse(ids) } }
@@ -76,20 +71,21 @@ router.get('/multiple/idList', (request, response) => {
     })
 })
 
-router.put('/', (request, response) => {
+// Save new entry
+router.post('/', (request, response) => {
     let item = new Model(request.body)
-    Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error, item) => {
+    item.save((error, item) => {
         if (error) return response.status(500).send(errorResponse(error))
         return response.status(200).send(successWithItems(item))
     })
 })
 
-router.delete('/:id', (request, response) => {
-    Model.remove({ _id: request.params.id }, (error) => {
-        if (error) {
-            return response.status(500).send(errorResponse(error))
-        }
-        return response.status(200).send(successResponse)
+// Edit entry
+router.put('/', (request, response) => {
+    let item = new Model(request.body)
+    Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error, item) => {
+        if (error) return response.status(500).send(errorResponse(error))
+        return response.status(200).send(successWithItems(item))
     })
 })
 

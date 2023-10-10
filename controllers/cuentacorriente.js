@@ -1,6 +1,11 @@
-const express = require('express');
-const Model   = require('../models/cuentacorriente');
-const router  = express.Router();
+'use strict'
+const express = require('express')
+const Model = require('../models/cuentacorriente')
+const router = express.Router()
+const {
+    generateQuery,
+    paginationParams
+} = require('../helpers/controllersHelper')
 
 const errorResponse = (error) => {
     return {
@@ -15,62 +20,64 @@ const successResponse = {
     message: 'OK'
 }
 
-router.post('/', (request, response) => {
-    let item = new Model(request.body);
-    item.save((error) => {
-        if (error) {
-            return response.status(500).json(errorResponse(error));
-        }
-        return response.status(200).json(successResponse);
-    });
-});
+// Delete current account
+router.delete('/:id', (request, response) => {
+    Model.deleteOne({ _id: request.params.id }, (error) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(successResponse)
+    })
+})
 
+//Get current accounts list
+router.get('/', (request, response) => {
+    Model
+        .paginate(
+            generateQuery(request),
+            paginationParams(request),
+            (error, items) => {
+                if (error) return response.status(500).json(errorResponse(error))
+                return response.status(200).json(items)
+            }
+        )
+})
 
+//Get current account by id
 router.get('/:id', (request, response) => {
     Model.findById(request.params.id).exec((error, item) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(item);
-    });
-});
-
-
-router.get('/', (request, response) => {
-    const {page, limit, filters} = request.query;
-    const query = JSON.parse(filters);
-    Model.paginate((query) ? {nombre: new RegExp(query.nombre, 'i')} : {}, {
-        page,
-        limit,
-    }, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(items);
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(item)
     })
-});
+})
 
-//Get cuentascorrientes list id
+// Get current accounts list id
 router.get('/multiple/idList', (request, response) => {
-    const {ids} = request.query;
-    const query = {_id: {$in: JSON.parse(ids)}};
+    const { ids } = request.query
+    const query = { _id: { $in: JSON.parse(ids) } }
     Model.find(query, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(items);
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(items)
     })
-});
+})
 
+// Save new current account
+router.post('/', (request, response) => {
+    let item = new Model(request.body)
+    item.save((error) => {
+        if (error) {
+            return response.status(500).json(errorResponse(error))
+        }
+        return response.status(200).json(successResponse)
+    })
+})
+
+// Edit current account
 router.put('/:id', (request, response) => {
-    let item = new Model(request.body);
+    let item = new Model(request.body)
     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(successResponse);
-    });
-});
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(successResponse)
+    })
+})
 
-
-router.delete('/:id', (request, response) => {
-    Model.deleteOne({_id: request.params.id}, (error) => {
-        if (error) return response.status(500).json(errorResponse(error));
-        return response.status(200).json(successResponse);
-    });
-});
-
-module.exports = router;
+module.exports = router
 

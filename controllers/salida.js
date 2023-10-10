@@ -1,6 +1,11 @@
+'use strict'
 const express = require('express')
-const Model   = require('../models/salida')
-const router  = express.Router()
+const Model = require('../models/salida')
+const router = express.Router()
+const {
+    generateQuery,
+    paginationParams
+} = require('../helpers/controllersHelper')
 
 const errorResponse = (error) => {
     return {
@@ -23,6 +28,50 @@ const successWithItems = (items) => {
     }
 }
 
+// Delete output
+router.delete('/:id', (request, response) => {
+    Model.deleteOne({ _id: request.params.id }, (error) => {
+        if (error) {
+            return response.status(500).send(errorResponse(error))
+        }
+        return response.status(200).send(successResponse)
+    })
+})
+
+// Get outputs list
+router.get('/', (request, response) => {
+    const populateParams = ['usuario']
+    const sortParam = '_id'
+    Model
+        .paginate(
+            generateQuery(request),
+            paginationParams(request, populateParams, sortParam),
+            (error, items) => {
+                if (error) return response.status(500).json(errorResponse(error))
+                return response.status(200).json(items)
+            }
+        )
+})
+
+// Get output by id
+router.get('/:id', (request, response) => {
+    Model.findById(request.params.id).exec((error, item) => {
+        if (error) return response.status(500).send(errorResponse(error))
+        return response.status(200).send(successWithItems(item))
+    })
+})
+
+//Get outputs list id
+router.get('/multiple/idList', (request, response) => {
+    const { ids } = request.query
+    const query = { _id: { $in: JSON.parse(ids) } }
+    Model.find(query, (error, items) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(items)
+    })
+})
+
+// Save new output
 router.post('/', (request, response) => {
     let item = new Model(request.body)
     item.save((error, item) => {
@@ -31,65 +80,12 @@ router.post('/', (request, response) => {
     })
 })
 
-router.get('/', (request, response) => {
-    const { page, limit, filters, initialDate, finalDate } = request.query
-    const query = (filters) ? JSON.parse(filters) : null
-    if (query && Object.keys(query).length > 0) {
-        if (query.descripcion) query.descripcion = new RegExp(query.descripcion, 'i')
-    }
-
-    if (!page) {
-        Model
-            .find((initialDate) ? { fecha: { $gte: initialDate, $lte: finalDate } } : {})
-            .populate(['usuario'])
-            .exec((error, items) => {
-            if (error) return response.status(500).json(errorResponse(error))
-            return response.status(200).json(items)
-        })
-    } else {
-        Model.paginate(query, {
-            page,
-            limit,
-            populate: ['usuario'],
-            sort: { '_id': -1 }
-        }, (error, items) => {
-            if (error) return response.status(500).send(errorResponse(error))
-            return response.status(200).send(successWithItems(items))
-        })
-    }
-})
-
-router.get('/:id', (request, response) => {
-    Model.findById(request.params.id).exec((error, item) => {
-        if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(item))
-    })
-})
-
-//Get salidas list id
-router.get('/multiple/idList', (request, response) => {
-    const {ids} = request.query
-    const query = {_id: {$in: JSON.parse(ids)}}
-    Model.find(query, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(items)
-    })
-})
-
+// Edit output
 router.put('/', (request, response) => {
     let item = new Model(request.body)
     Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error, item) => {
         if (error) return response.status(500).send(errorResponse(error))
         return response.status(200).send(successWithItems(item))
-    })
-})
-
-router.delete('/:id', (request, response) => {
-    Model.remove({_id: request.params.id}, (error) => {
-        if(error){
-            return response.status(500).send(errorResponse(error))
-        }
-        return response.status(200).send(successResponse)
     })
 })
 
