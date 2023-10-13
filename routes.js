@@ -21,5 +21,6 @@ module.exports = app => {
     router.use('/uploads', auth.verifyAuthentication, require('./controllers/uploader'))
     router.use('/usuarios', auth.verifyAuthentication, require('./controllers/usuario'))
     router.use('/ventas', auth.verifyAuthentication, require('./controllers/venta'))
+    router.use('/zonasdeventas', auth.verifyAuthentication, require('./controllers/zonadeventa'))
     app.use('/api/v1/', router)
 }

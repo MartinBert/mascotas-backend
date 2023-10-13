@@ -29,13 +29,13 @@ const generateQuery = (request) => {
 const paginationParams = (
     request,
     populateParams = null,
-    sortParam = null
+    sortParams = null
 ) => {
     return {
         limit: request.query.limit || 1000000,
         page: request.query.page || 1,
         populate: populateParams,
-        sort: sortParam ? { [sortParam]: -1 } : null
+        sort: sortParams ? { [sortParams.param]: sortParams.direction } : null
     }
 }
 

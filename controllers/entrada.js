@@ -41,11 +41,11 @@ router.delete('/:id', (request, response) => {
 //Get entries list
 router.get('/', (request, response) => {
     const populateParams = ['usuario']
-    const sortParam = '_id'
+    const sortParams = {param: '_id', direction: -1}
     Model
         .paginate(
             generateQuery(request),
-            paginationParams(request, populateParams, sortParam),
+            paginationParams(request, populateParams, sortParams),
             (error, items) => {
                 if (error) return response.status(500).json(errorResponse(error))
                 return response.status(200).json(items)
