@@ -45,10 +45,10 @@ router.get('/', (request, response) => {
 router.get('/:id', (request, response) => {
     Model
         .findById(request.params.id)
-        .populate({
+        .populate([{
             path: 'empresa',
             populate: ['condicionFiscal', 'logo']
-        })
+        }])
         .populate(['puntoVenta'])
         .exec((error, item) => {
             if (error) return response.status(500).json(errorResponse(error))

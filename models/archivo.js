@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
-const mongoosePaginate = require('mongoose-paginate-v2');
+const mongoose = require('mongoose')
+const Schema   = mongoose.Schema
+const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
     url: {
@@ -25,8 +25,8 @@ const schema = new Schema({
         type: Number,
         required: true
     }
-}, { timestamps: true });
+}, { timestamps: true })
 
-schema.plugin(mongoosePaginate);
+schema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('archivo', schema);
+module.exports = mongoose.model('archivo', schema)

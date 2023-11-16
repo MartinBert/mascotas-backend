@@ -49,6 +49,17 @@ router.get('/:id', (request, response) => {
     })
 })
 
+// Get payment method by name
+router.get('/name/:name', (request, response) => {
+    Model.paginate({ nombre: new RegExp(request.params.name, 'i') }, {
+        page: 0,
+        limit: 10,
+    }, (error, items) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(items)
+    })
+})
+
 //Get payment method list id
 router.get('/multiple/idList', (request, response) => {
     const { ids } = request.query

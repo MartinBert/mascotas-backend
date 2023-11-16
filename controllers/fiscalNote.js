@@ -1,7 +1,6 @@
 'use strict'
 const express = require('express')
-const Model = require('../models/venta')
-const Renglon = require('../models/ventarenglon')
+const Model = require('../models/fiscalNote')
 const router = express.Router()
 const {
     generateQuery,
@@ -21,7 +20,15 @@ const successResponse = {
     message: 'OK'
 }
 
-// Delete sale
+const successWithItems = (items) => {
+    return {
+        code: 200,
+        message: 'OK',
+        data: items
+    }
+}
+
+// Delete fiscal note
 router.delete('/:id', (request, response) => {
     Model.deleteOne({ _id: request.params.id }, (error) => {
         if (error) return response.status(500).json(errorResponse(error))
@@ -29,17 +36,10 @@ router.delete('/:id', (request, response) => {
     })
 })
 
-// Get sales list
+// Get fiscal notes list
 router.get('/', (request, response) => {
-    const populateParams = [
-        // 'cliente',
-        'documento',
-        // 'empresa',
-        // 'puntoVenta',
-        'renglones',
-        'usuario'
-    ]
-    const sortParams = {param: 'fechaEmision', direction: -1}
+    const populateParams = ['documento', 'renglones', 'usuario']
+    const sortParams = { param: '-indice', direction: -1 }
     Model
         .paginate(
             generateQuery(request),
@@ -51,7 +51,7 @@ router.get('/', (request, response) => {
         )
 })
 
-// Get sale by id
+// Get fiscal note by id
 router.get('/:id', (request, response) => {
     Model
         .findById(request.params.id)
@@ -62,7 +62,7 @@ router.get('/:id', (request, response) => {
         })
 })
 
-// Get last index of sale
+// Get last index of fiscal note
 router.get('/last/index/number', (request, response) => {
     Model
         .findOne()
@@ -73,8 +73,8 @@ router.get('/last/index/number', (request, response) => {
         })
 })
 
-// Get last voucher code
-router.get('/last/voucher/number/:code', (request, response) => {
+// Get last fiscal note code
+router.get('/last/fiscalNote/number/:code', (request, response) => {
     Model
         .findOne({ documentoCodigo: request.params.code })
         .sort('-indice')
@@ -84,7 +84,7 @@ router.get('/last/voucher/number/:code', (request, response) => {
         })
 })
 
-//Get sales list id
+//Get fiscal notes list id
 router.get('/multiple/idList', (request, response) => {
     const { ids } = request.query
     const query = { _id: { $in: JSON.parse(ids) } }
@@ -97,30 +97,16 @@ router.get('/multiple/idList', (request, response) => {
         })
 })
 
-// Save new sale
+// Save new fiscal note
 router.post('/', (request, response) => {
-    const item = new Model(request.body)
-    item.renglones = request.body.renglones.map(renglon => new Renglon(renglon))
-
-    const saveChildEntities = async () => {
-        for (const renglon of item.renglones) {
-            await renglon.save()
-        }
-    }
-
-    saveChildEntities()
-        .then(() => {
-            item.save((error) => {
-                if (error) return response.status(500).json(errorResponse(error))
-                return response.status(200).json(successResponse)
-            })
-        })
-        .catch(error => {
-            return response.status(500).json(errorResponse(error))
-        })
+    let item = new Model(request.body)
+    item.save((error, item) => {
+        if (error) return response.status(500).send(errorResponse(error))
+        return response.status(200).send(successWithItems(item))
+    })
 })
 
-// Update sale
+// Update fiscal note
 router.put('/:id', (request, response) => {
     let item = new Model(request.body)
     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {

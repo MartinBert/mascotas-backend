@@ -1,29 +1,33 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const mongoosePaginate = require('mongoose-paginate-v2');
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
-    nombre:{
-        type: String,
-        required: true
-    },
-    nota:{
-        type: String,
+    cantidadAgregadaPorDescuento_enKg: {
+        type: Number,
         required: false
     },
-    codigoBarras:{
+    cantidadg: {
+        type: Number,
+        required: false
+    },
+    cantidadKg: {
+        type: Number,
+        required: false
+    },
+    cantidadQuitadaPorRecargo_enKg: {
+        type: Number,
+        required: false
+    },
+    cantidadUnidades: {
+        type: Number,
+        required: true
+    },
+    codigoBarras: {
         type: String,
         required: true
     },
-    precioUnitario:{
-        type: Number,
-        required: true
-    },
-    porcentajeIva: {
-        type: Number,
-        required: true
-    },
-    importeIva: {
+    descuento: {
         type: Number,
         required: true
     },
@@ -35,56 +39,52 @@ const schema = new Schema({
         type: Boolean,
         required: true
     },
-    cantidadUnidades:{
+    importeIva: {
         type: Number,
         required: true
     },
-    cantidadQuitadaPorRecargo_enKg:{
+    nombre: {
+        type: String,
+        required: true
+    },
+    nota: {
+        type: String,
+        required: false
+    },
+    porcentajeDescuentoRenglon: {
         type: Number,
         required: false
     },
-    cantidadAgregadaPorDescuento_enKg:{
-        type: Number,
-        required: false
-    },
-    cantidadKg:{
-        type: Number,
-        required: false
-    },
-    cantidadg:{
-        type: Number,
-        required: false
-    },
-    porcentajeRecargoRenglon:{
-        type: Number,
-        required: false
-    },
-    porcentajeDescuentoRenglon:{
-        type: Number,
-        required: false
-    },
-    recargo:{
+    porcentajeIva: {
         type: Number,
         required: true
     },
-    descuento:{
+    porcentajeRecargoRenglon: {
+        type: Number,
+        required: false
+    },
+    precioBruto: {
         type: Number,
         required: true
     },
-    precioNeto:{
+    precioNeto: {
         type: Number,
         required: true
     },
-    precioNetoFijo:{
+    precioNetoFijo: {
         type: Boolean,
         required: true
     },
-    precioBruto:{
+    precioUnitario: {
         type: Number,
         required: true
     },
-}, { timestamps: true });
+    recargo: {
+        type: Number,
+        required: true
+    }
+}, { timestamps: true })
 
-schema.plugin(mongoosePaginate);
+schema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('ventarenglon', schema);
+module.exports = mongoose.model('ventarenglon', schema)

@@ -49,6 +49,14 @@ router.get('/:id', (request, response) => {
     })
 })
 
+// Get document by code
+router.get('/code/:code', (request, response) => {
+    Model.findOne({ codigoUnico: new RegExp(request.params.code, 'i') }).exec((error, item) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(item)
+    })
+})
+
 // Get documentos list id
 router.get('/multiple/idList', (request, response) => {
     const { ids } = request.query
@@ -56,6 +64,14 @@ router.get('/multiple/idList', (request, response) => {
     Model.find(query, (error, items) => {
         if (error) return response.status(500).json(errorResponse(error))
         return response.status(200).json(items)
+    })
+})
+
+// Get document by name
+router.get('/name/:name', (request, response) => {
+    Model.findOne({ nombre: new RegExp(request.params.name, 'i') }).exec((error, item) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(item)
     })
 })
 

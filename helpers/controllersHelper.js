@@ -13,7 +13,7 @@ const generateQuery = (request) => {
     const queryData = JSON.parse(filters)
     const query = {}
     const existsFilters = verifyFilters(queryData)
-    if (existsFilters === false) return query
+    if (!existsFilters) return query
     const queryKeys = Object.keys(queryData)
     const queryValues = Object.values(queryData)
     queryKeys.forEach(function (element, index) {

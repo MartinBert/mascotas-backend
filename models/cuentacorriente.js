@@ -1,8 +1,8 @@
 'use strict'
 
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const mongoosePaginate = require('mongoose-paginate-v2');
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+const mongoosePaginate = require('mongoose-paginate-v2')
 
 
 const schema = new Schema({
@@ -36,6 +36,6 @@ const schema = new Schema({
     }
 })
 
-schema.plugin(mongoosePaginate);
+schema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('cuentacorriente', schema);
+module.exports = mongoose.model('cuentacorriente', schema)
