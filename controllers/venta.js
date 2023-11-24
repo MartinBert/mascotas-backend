@@ -32,14 +32,11 @@ router.delete('/:id', (request, response) => {
 // Get sales list
 router.get('/', (request, response) => {
     const populateParams = [
-        // 'cliente',
         'documento',
-        // 'empresa',
-        // 'puntoVenta',
         'renglones',
         'usuario'
     ]
-    const sortParams = {param: 'fechaEmision', direction: -1}
+    const sortParams = { param: 'fechaEmision', direction: -1 }
     Model
         .paginate(
             generateQuery(request),
