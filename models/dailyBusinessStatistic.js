@@ -5,6 +5,10 @@ const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
+    concept: {
+        type: String,
+        required: true
+    },
     dailyExpense: {
         type: Number,
         required: true
