@@ -41,7 +41,7 @@ router.delete('/:id', (request, response) => {
 // Get outputs list
 router.get('/', (request, response) => {
     const populateParams = ['usuario']
-    const sortParams = {param: '_id', direction: -1}
+    const sortParams = {param: 'fecha', direction: -1}
     Model
         .paginate(
             generateQuery(request),
@@ -68,6 +68,38 @@ router.get('/multiple/idList', (request, response) => {
     Model.find(query, (error, items) => {
         if (error) return response.status(500).json(errorResponse(error))
         return response.status(200).json(items)
+    })
+})
+
+// Get newer output
+router.get('/recordsInfo/newer', (request, response) => {
+    Model
+        .find({})
+        .sort({ 'fecha': -1 })
+        .limit(1)
+        .exec((error, item) => {
+            if (error) return response.status(500).json(errorResponse(error))
+            return response.status(200).json(item)
+        })
+})
+
+// Get oldest output
+router.get('/recordsInfo/oldest', (request, response) => {
+    Model
+        .find({})
+        .sort({ 'fecha': 1 })
+        .limit(1)
+        .exec((error, item) => {
+            if (error) return response.status(500).json(errorResponse(error))
+            return response.status(200).json(item)
+        })
+})
+
+// Get records quantity of outputs
+router.get('/recordsInfo/quantity', (request, response) => {
+    Model.estimatedDocumentCount((error, numOfDocs) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(numOfDocs)
     })
 })
 

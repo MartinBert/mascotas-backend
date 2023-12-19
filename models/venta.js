@@ -171,6 +171,10 @@ const schema = new Schema({
         ref: 'producto',
         required: true
     }],
+    profit: {
+        type: Number,
+        required: true
+    },
     puntoVenta: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'puntoventa',

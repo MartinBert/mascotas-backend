@@ -12,10 +12,12 @@ const generateQuery = (request) => {
     const filters = request.query.filters || null
     const queryData = JSON.parse(filters)
     const query = {}
+    let queryKeys
+    let queryValues
     const existsFilters = verifyFilters(queryData)
     if (!existsFilters) return query
-    const queryKeys = Object.keys(queryData)
-    const queryValues = Object.values(queryData)
+    queryKeys = Object.keys(queryData)
+    queryValues = Object.values(queryData)
     queryKeys.forEach(function (element, index) {
         if (typeof queryValues[index] === 'string') {
             query[element] = new RegExp(queryValues[index], 'i')

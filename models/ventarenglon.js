@@ -79,6 +79,10 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+    profit: {
+        type: Number,
+        required: true
+    },
     recargo: {
         type: Number,
         required: true

@@ -1,9 +1,13 @@
 const mongoose = require('mongoose')
-const Schema   = mongoose.Schema
+const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
-    nombre: {
+    cashRegister: {
+        type: Boolean,
+        required: true
+    },
+    codigoUnico: {
         type: String,
         required: true
     },
@@ -11,8 +15,12 @@ const schema = new Schema({
         type: Boolean,
         required: true
     },
-    ticket: {
-        type: Boolean,
+    letra: {
+        type: String,
+        required: true
+    },
+    nombre: {
+        type: String,
         required: true
     },
     presupuesto: {
@@ -23,14 +31,10 @@ const schema = new Schema({
         type: Boolean,
         required: true
     },
-    letra: {
-        type: String,
+    ticket: {
+        type: Boolean,
         required: true
-    },
-    codigoUnico: {
-        type: String,
-        required: true
-    },
+    }
 }, { timestamps: true })
 
 schema.plugin(mongoosePaginate)

@@ -59,6 +59,30 @@ router.get('/:id', (request, response) => {
         })
 })
 
+// Get newer sale
+router.get('/recordsInfo/newer', (request, response) => {
+    Model
+        .find({})
+        .sort({ 'fechaEmision': -1 })
+        .limit(1)
+        .exec((error, item) => {
+            if (error) return response.status(500).json(errorResponse(error))
+            return response.status(200).json(item)
+        })
+})
+
+// Get oldest sale
+router.get('/recordsInfo/oldest', (request, response) => {
+    Model
+        .find({})
+        .sort({ 'fechaEmision': 1 })
+        .limit(1)
+        .exec((error, item) => {
+            if (error) return response.status(500).json(errorResponse(error))
+            return response.status(200).json(item)
+        })
+})
+
 // Get last index of sale
 router.get('/last/index/number', (request, response) => {
     Model
@@ -94,6 +118,14 @@ router.get('/multiple/idList', (request, response) => {
         })
 })
 
+// Get records quantity of sales
+router.get('/recordsInfo/quantity', (request, response) => {
+    Model.estimatedDocumentCount((error, numOfDocs) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(numOfDocs)
+    })
+})
+
 // Save new sale
 router.post('/', (request, response) => {
     const item = new Model(request.body)
@@ -118,12 +150,32 @@ router.post('/', (request, response) => {
 })
 
 // Update sale
+// router.put('/:id', (request, response) => {
+//     let item = new Model(request.body)
+//     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
+//         if (error) return response.status(500).json(errorResponse(error))
+//         return response.status(200).json(successResponse)
+//     })
+// })
+
 router.put('/:id', (request, response) => {
-    let item = new Model(request.body)
-    Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(successResponse)
-    })
+    const item = new Model(request.body)
+    const lines = request.body.renglones.map(renglon => renglon)
+
+    const editChildEntities = async () => {
+        for (let index = 0; index < lines.length; index++) {
+            const element = lines[index]
+            await Renglon.findOneAndUpdate({ _id: element._id }, { profit: element.profit })
+        }
+    }
+
+    editChildEntities()
+        .then(() => {
+            Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
+                if (error) return response.status(500).json(errorResponse(error))
+                return response.status(200).json(successResponse)
+            })
+        })
 })
 
 module.exports = router

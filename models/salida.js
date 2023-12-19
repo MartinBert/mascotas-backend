@@ -13,6 +13,10 @@ const schema = new Schema({
         type: Date,
         required: true
     },
+    fechaString:{
+        type: String,
+        required: true
+    },
     cantidad: {
         type: Number,
         required: true

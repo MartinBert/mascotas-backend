@@ -24,6 +24,10 @@ const schema = new Schema({
     date: {
         type: Date,
         required: true
+    },
+    dateString: {
+        type: String,
+        required: true
     }
 }, { timestamps: true })
 
