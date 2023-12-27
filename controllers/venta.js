@@ -150,32 +150,12 @@ router.post('/', (request, response) => {
 })
 
 // Update sale
-// router.put('/:id', (request, response) => {
-//     let item = new Model(request.body)
-//     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
-//         if (error) return response.status(500).json(errorResponse(error))
-//         return response.status(200).json(successResponse)
-//     })
-// })
-
 router.put('/:id', (request, response) => {
-    const item = new Model(request.body)
-    const lines = request.body.renglones.map(renglon => renglon)
-
-    const editChildEntities = async () => {
-        for (let index = 0; index < lines.length; index++) {
-            const element = lines[index]
-            await Renglon.findOneAndUpdate({ _id: element._id }, { profit: element.profit })
-        }
-    }
-
-    editChildEntities()
-        .then(() => {
-            Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
-                if (error) return response.status(500).json(errorResponse(error))
-                return response.status(200).json(successResponse)
-            })
-        })
+    let item = new Model(request.body)
+    Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(successResponse)
+    })
 })
 
 module.exports = router

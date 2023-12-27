@@ -95,10 +95,17 @@ router.post('/', (request, response) => {
 // Update business statistics
 router.put('/:id', (request, response) => {
     let item = new Model(request.body)
-    Model.findOneAndUpdate({ _id: request.body._id }, item, { new: true }, (error) => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(successResponse)
-    })
+    Model.findByIdAndUpdate(
+        request.body._id,
+        {
+            dailyExpense: request.body.dailyExpense,
+            dailyIncome: request.body.dailyIncome,
+            dailyProfit: request.body.dailyProfit
+        },
+        { new: true }, (error) => {
+            if (error) return response.status(500).json(errorResponse(error))
+            return response.status(200).json(successWithItems(item))
+        })
 })
 
 module.exports = router
