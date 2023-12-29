@@ -2,6 +2,7 @@
 
 const verifyFilters = (queryData) => {
     if (!queryData) return false
+    if (Object.keys(queryData).length === 0) return false
     const validValues = Object.values(queryData)
         .filter(value => value !== null && value !== '')
     if (validValues.length === 0) return false
