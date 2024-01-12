@@ -60,7 +60,7 @@ router.get('/multiple/idList', (request, response) => {
 })
 
 // Get marcas by name
-router.get('/paginated/name/:name', (request, response) => {
+router.get('/name/:name', (request, response) => {
     Model.paginate({ nombre: new RegExp(request.params.name, 'i') }, {
         page: 0,
         limit: 10,
