@@ -19,6 +19,7 @@ module.exports = app => {
     router.use('/puntosventa', auth.verifyAuthentication, require('./controllers/puntoventa'))
     router.use('/rubros', auth.verifyAuthentication, require('./controllers/rubro'))
     router.use('/salidas', auth.verifyAuthentication, require('./controllers/salida'))
+    router.use('/stock_history', auth.verifyAuthentication, require('./controllers/stockHistory'))
     router.use('/unidadesmedida', auth.verifyAuthentication, require('./controllers/unidadmedida'))
     router.use('/uploads', auth.verifyAuthentication, require('./controllers/uploader'))
     router.use('/usuarios', auth.verifyAuthentication, require('./controllers/usuario'))

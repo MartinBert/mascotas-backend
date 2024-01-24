@@ -1,38 +1,33 @@
 'use strict'
 
 const mongoose = require('mongoose')
-const Schema   = mongoose.Schema
+const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
-    descripcion: {
-        type: String,
-        required: true
-    },
-    fecha:{
+    date: {
         type: Date,
         required: true
     },
-    fechaString:{
+    dateString: {
         type: String,
         required: true
     },
-    cantidad: {
+    entries: {
         type: Number,
         required: true
     },
-    costoTotal: {
+    outputs: {
         type: Number,
         required: true
     },
-    // A productos se le agrega el campo cantidadesEntrantes
-    productos: [{ type: Object }],
-    usuario: {
+    product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'usuario'
-    },   
+        required: true,
+        unique: true
+    }
 }, { timestamps: true })
 
 schema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('entrada', schema)
+module.exports = mongoose.model('stockHistory', schema)
