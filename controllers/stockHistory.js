@@ -39,6 +39,9 @@ router.delete('/:id', (request, response) => {
 
 // Get stock history
 router.get('/', (request, response) => {
+    let queries = JSON.parse(request.query.filters)
+    const product = queries?.product
+    if (!product) return
     const sortParams = { param: 'date', direction: -1 }
     Model
         .paginate(

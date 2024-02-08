@@ -1,4 +1,6 @@
 'use strict'
+const mongoose = require('mongoose')
+
 
 const verifyFilters = (queryData) => {
     if (!queryData) return false
@@ -13,18 +15,15 @@ const generateQuery = (request) => {
     const filters = request.query.filters || null
     const queryData = JSON.parse(filters)
     const query = {}
-    let queryKeys
-    let queryValues
     const existsFilters = verifyFilters(queryData)
     if (!existsFilters) return query
-    queryKeys = Object.keys(queryData)
-    queryValues = Object.values(queryData)
-    queryKeys.forEach(function (element, index) {
-        if (typeof queryValues[index] === 'string') {
-            query[element] = new RegExp(queryValues[index], 'i')
-        } else {
-            query[element] = queryValues[index]
-        }
+    const queryKeys = Object.keys(queryData)
+    const queryValues = Object.values(queryData)
+    queryKeys.forEach(function (objKey, index) {
+        const value = queryValues[index]
+        const valueIsString = typeof value === 'string'
+        if (value && valueIsString) query[objKey] = new RegExp(value, 'i')
+        else if (value && !valueIsString) query[objKey] = value
     })
     return query
 }

@@ -30,10 +30,11 @@ router.delete('/:id', (request, response) => {
 
 // Get categories list
 router.get('/', (request, response) => {
+    const sortParams = { param: 'nombre', direction: 1 }
     Model
         .paginate(
             generateQuery(request),
-            paginationParams(request),
+            paginationParams(request, null, sortParams),
             (error, items) => {
                 if (error) return response.status(500).json(errorResponse(error))
                 return response.status(200).json(items)
