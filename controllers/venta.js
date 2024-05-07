@@ -33,6 +33,7 @@ router.delete('/:id', (request, response) => {
 router.get('/', (request, response) => {
     const populateParams = [
         'documento',
+        'productos',
         'renglones',
         'usuario'
     ]

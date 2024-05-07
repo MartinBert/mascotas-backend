@@ -17,6 +17,10 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+    itIsAManualCorrection: {
+        type: Boolean,
+        required: true
+    },
     outputs: {
         type: Number,
         required: true

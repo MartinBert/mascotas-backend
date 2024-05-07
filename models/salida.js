@@ -1,38 +1,42 @@
 'use strict'
 
 const mongoose = require('mongoose')
-const Schema   = mongoose.Schema
+const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
+    cantidad: {
+        type: Number,
+        required: true
+    },
     descripcion: {
         type: String,
         required: true
     },
-    fecha:{
+    fecha: {
         type: Date,
         required: true
     },
-    fechaString:{
+    fechaString: {
         type: String,
         required: true
     },
-    cantidad: {
+    ganancia: {
         type: Number,
         required: true
     },
     gananciaNeta: {
         type: Number,
         required: true
-    },   
+    },
 
     // A productos se le agrega el atributo cantidadesSalientes y cantidadesFraccionadasSalientes.
-    productos: [{ type: Object }], 
-      
+    productos: [{ type: Object }],
+
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'usuario'
-    },   
+    },
 }, { timestamps: true })
 
 schema.plugin(mongoosePaginate)
