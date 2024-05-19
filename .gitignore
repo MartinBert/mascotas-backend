@@ -1,0 +1,9 @@
+# Server Configs
+/config
+
+# Dependencies and Development Resources
+/backups
+/node_modules
+
+# Public
+/public
