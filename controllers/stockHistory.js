@@ -39,9 +39,12 @@ router.delete('/:id', (request, response) => {
 
 // Get stock history
 router.get('/', (request, response) => {
+<<<<<<< HEAD
     let queries = JSON.parse(request.query.filters)
     const product = queries?.product
     if (!product) return
+=======
+>>>>>>> e0f49f1e714cfd78dc0198823265fcac8dbbe400
     const sortParams = { param: 'date', direction: -1 }
     Model
         .paginate(
@@ -98,6 +101,7 @@ router.post('/', (request, response) => {
 // Update stock history
 router.put('/:id', (request, response) => {
     let item = new Model(request.body)
+<<<<<<< HEAD
     Model.findByIdAndUpdate(
         request.body._id,
         // {
@@ -109,6 +113,12 @@ router.put('/:id', (request, response) => {
             if (error) return response.status(500).json(errorResponse(error))
             return response.status(200).json(successWithItems(item))
         })
+=======
+    Model.findOneAndUpdate({ _id: request.body._id }, item, { new: true }, (error) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(successWithItems(item))
+    })
+>>>>>>> e0f49f1e714cfd78dc0198823265fcac8dbbe400
 })
 
 module.exports = router
