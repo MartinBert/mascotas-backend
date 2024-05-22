@@ -28,8 +28,7 @@ const schema = new Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'product',
-        required: true,
-        unique: true
+        required: true
     }
 }, { timestamps: true })
 
