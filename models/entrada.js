@@ -5,6 +5,14 @@ const Schema   = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
+    cantidad: {
+        type: Number,
+        required: true
+    },
+    costoTotal: {
+        type: Number,
+        required: true
+    },
     descripcion: {
         type: String,
         required: true
@@ -15,14 +23,6 @@ const schema = new Schema({
     },
     fechaString:{
         type: String,
-        required: true
-    },
-    cantidad: {
-        type: Number,
-        required: true
-    },
-    costoTotal: {
-        type: Number,
         required: true
     },
     // A productos se le agrega el campo cantidadesEntrantes

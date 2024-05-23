@@ -29,10 +29,8 @@ const schema = new Schema({
         type: Number,
         required: true
     },
-
     // A productos se le agrega el atributo cantidadesSalientes y cantidadesFraccionadasSalientes.
     productos: [{ type: Object }],
-
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'usuario'
