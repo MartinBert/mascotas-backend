@@ -166,6 +166,14 @@ const schema = new Schema({
         type: String,
         required: true
     }],
+    porcentajeRecargoGlobal: {
+        type: Number,
+        required: false
+    },
+    porcentajeDescuentoGlobal: {
+        type: Number,
+        required: false
+    },
     productos: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'producto',
@@ -180,21 +188,13 @@ const schema = new Schema({
         ref: 'puntoventa',
         required: true
     },
-    puntoVentaNumero: {
-        type: Number,
-        required: true
-    },
     puntoVentaNombre: {
         type: String,
         required: true
     },
-    porcentajeRecargoGlobal: {
+    puntoVentaNumero: {
         type: Number,
-        required: false
-    },
-    porcentajeDescuentoGlobal: {
-        type: Number,
-        required: false
+        required: true
     },
     renglones: [{
         type: mongoose.Schema.Types.ObjectId,
