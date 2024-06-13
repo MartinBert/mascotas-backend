@@ -65,6 +65,26 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    normalizedBarcode: {
+        type: String,
+        required: true
+    },
+    normalizedBrand: {
+        type: String,
+        required: true
+    },
+    normalizedName: {
+        type: String,
+        required: true
+    },
+    normalizedProductCode: {
+        type: String,
+        required: true
+    },
+    normalizedType: {
+        type: String,
+        required: true
+    },
     porcentajeIvaCompra: {
         type: Number,
         required: true,
