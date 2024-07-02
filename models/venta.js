@@ -166,11 +166,11 @@ const schema = new Schema({
         type: String,
         required: true
     }],
-    porcentajeRecargoGlobal: {
+    porcentajeDescuentoGlobal: {
         type: Number,
         required: false
     },
-    porcentajeDescuentoGlobal: {
+    porcentajeRecargoGlobal: {
         type: Number,
         required: false
     },

@@ -25,6 +25,10 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    normalizedBusinessName: {
+        type: String,
+        required: true
+    },
     telefono: {
         type: String,
         required: true
