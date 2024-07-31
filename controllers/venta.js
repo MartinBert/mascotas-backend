@@ -60,7 +60,7 @@ router.get('/:id', (request, response) => {
         })
 })
 
-// Get newer sale
+// Get newer record
 router.get('/recordsInfo/newer', (request, response) => {
     Model
         .find({})
@@ -72,10 +72,40 @@ router.get('/recordsInfo/newer', (request, response) => {
         })
 })
 
-// Get oldest sale
+// Get oldest record
 router.get('/recordsInfo/oldest', (request, response) => {
     Model
         .find({})
+        .sort({ 'fechaEmision': 1 })
+        .limit(1)
+        .exec((error, item) => {
+            if (error) return response.status(500).json(errorResponse(error))
+            return response.status(200).json(item)
+        })
+})
+
+// Get newer sale
+router.get('/salesInfo/newer', (request, response) => {
+    const fiscalBillCodes = ['001', '006', '011', '051', '081', '082', '083', '111', '118']
+    const codesToQuery = fiscalBillCodes.map(code => { return { documentoCodigo: code } })
+    const query = { $or: codesToQuery }
+    Model
+        .find(query)
+        .sort({ 'fechaEmision': -1 })
+        .limit(1)
+        .exec((error, item) => {
+            if (error) return response.status(500).json(errorResponse(error))
+            return response.status(200).json(item)
+        })
+})
+
+// Get oldest sale
+router.get('/salesInfo/oldest', (request, response) => {
+    const fiscalBillCodes = ['001', '006', '011', '051', '081', '082', '083', '111', '118']
+    const codesToQuery = fiscalBillCodes.map(code => { return { documentoCodigo: code } })
+    const query = { $or: codesToQuery }
+    Model
+        .find(query)
         .sort({ 'fechaEmision': 1 })
         .limit(1)
         .exec((error, item) => {
