@@ -99,7 +99,7 @@ const schema = new Schema({
     },
     empresaLogo: {
         type: String,
-        required: true
+        required: false
     },
     empresaRazonSocial: {
         type: String,
