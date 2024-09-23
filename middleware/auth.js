@@ -74,7 +74,6 @@ const authController = {
 const validateCredentials = async (user, password) => {
     let token = null
     const match = (password === user.password) ? 'valid' : null
-    console.log(match)
     if (match) {
         token = jwt.sign(
             {

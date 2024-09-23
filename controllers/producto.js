@@ -78,6 +78,14 @@ router.get('/multiple/idList', (request, response) => {
     })
 })
 
+// Verify if exists records of products
+router.get('/recordsInfo/quantity', (request, response) => {
+    Model.estimatedDocumentCount((error, numOfDocs) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(numOfDocs)
+    })
+})
+
 // Edit product
 router.put('/', (request, response) => {
     let item = new Model(request.body)

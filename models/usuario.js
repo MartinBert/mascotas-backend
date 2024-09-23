@@ -5,13 +5,13 @@ const Schema   = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
-    nombre: {
-        type: String
-    },
     email: {
         type: String,
         unique: true,
         required: true
+    },
+    nombre: {
+        type: String
     },
     password: {
         type: String,
