@@ -3,10 +3,6 @@ const Schema   = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
-    nombre: {
-        type: String,
-        required: true
-    },
     arqueoCaja: {
         type: Boolean,
         required: true
@@ -15,10 +11,18 @@ const schema = new Schema({
         type: Boolean,
         required: true
     },
+    nombre: {
+        type: String,
+        required: true
+    },
+    normalizedName: {
+        type: String,
+        required: true
+    },
     planes:[{
         type: Object,
         required: true
-    }] //_id, nombre, cuotas, porcentaje
+    }] //_id, cuotas, nombre, normalizedName, porcentaje
 }, { timestamps: true })
 
 schema.plugin(mongoosePaginate)

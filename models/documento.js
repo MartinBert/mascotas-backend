@@ -23,6 +23,10 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    normalizedName: {
+        type: String,
+        required: true
+    },
     presupuesto: {
         type: Boolean,
         required: true

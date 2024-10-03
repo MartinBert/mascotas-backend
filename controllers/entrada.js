@@ -61,6 +61,16 @@ router.get('/:id', (request, response) => {
     })
 })
 
+// Get entries list id
+router.get('/multiple/idList', (request, response) => {
+    const { ids } = request.query
+    const query = { _id: { $in: JSON.parse(ids) } }
+    Model.find(query, (error, items) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(items)
+    })
+})
+
 // Get newer entry
 router.get('/recordsInfo/newer', (request, response) => {
     Model
@@ -83,16 +93,6 @@ router.get('/recordsInfo/oldest', (request, response) => {
             if (error) return response.status(500).json(errorResponse(error))
             return response.status(200).json(item)
         })
-})
-
-// Get entries list id
-router.get('/multiple/idList', (request, response) => {
-    const { ids } = request.query
-    const query = { _id: { $in: JSON.parse(ids) } }
-    Model.find(query, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(items)
-    })
 })
 
 // Get records quantity of entries

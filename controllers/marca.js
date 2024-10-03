@@ -71,6 +71,14 @@ router.get('/name/:name', (request, response) => {
     })
 })
 
+// Verify if exists records of products
+router.get('/recordsInfo/quantity', (request, response) => {
+    Model.estimatedDocumentCount((error, numOfDocs) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        return response.status(200).json(numOfDocs)
+    })
+})
+
 // Save new marca
 router.post('/', (request, response) => {
     let item = new Model(request.body)

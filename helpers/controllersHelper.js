@@ -1,6 +1,4 @@
 'use strict'
-const mongoose = require('mongoose')
-
 
 const verifyFilters = (queryData) => {
     if (!queryData) return false

@@ -49,7 +49,8 @@ const schema = new Schema({
     },
     marca: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'marca'
+        ref: 'marca',
+        required: true
     },
     margenGanancia: {
         type: Number,
@@ -62,6 +63,26 @@ const schema = new Schema({
         default: 0
     },
     nombre: {
+        type: String,
+        required: true
+    },
+    normalizedBarcode: {
+        type: String,
+        required: true
+    },
+    normalizedBrand: {
+        type: String,
+        required: true
+    },
+    normalizedName: {
+        type: String,
+        required: true
+    },
+    normalizedProductCode: {
+        type: String,
+        required: true
+    },
+    normalizedType: {
         type: String,
         required: true
     },
@@ -92,7 +113,8 @@ const schema = new Schema({
     },
     rubro: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'rubro'
+        ref: 'rubro',
+        required: true
     },
     unidadMedida: {
         type: mongoose.Schema.Types.ObjectId,
