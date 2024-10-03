@@ -32,6 +32,7 @@ const errorResponseAuthorization = (code, error) => {
 const authController = {
     login(req, res) {
         const { email, password } = req.body
+
         User.findOne({ email }, (error, user) => {
             if (error) return res.status(500).send(errorResponse(500, error))
             if (!user) return res.status(401).send(errorResponse(401, 'Invalid mail'))
