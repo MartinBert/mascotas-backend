@@ -17,10 +17,13 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+<<<<<<< HEAD
+=======
     itIsAManualCorrection: {
         type: Boolean,
         required: true
     },
+>>>>>>> e0f49f1e714cfd78dc0198823265fcac8dbbe400
     outputs: {
         type: Number,
         required: true
