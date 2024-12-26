@@ -113,6 +113,10 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    fiscalNoteConcept: {
+        type: String,
+        required: false
+    },
     importeIva: {
         type: Number,
         required: true
