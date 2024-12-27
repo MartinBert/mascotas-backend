@@ -39,6 +39,10 @@ const schema = new Schema({
     lightButtonsSecondaryColor: {
         type: String,
         required: true
+    },
+    typeOfDailyStatisticsView: {
+        type: String,
+        required: false
     }
 }, { timestamps: true })
 
