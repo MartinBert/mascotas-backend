@@ -5,20 +5,20 @@ const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
+    balanceViewExpense: {
+        type: Number,
+        required: true
+    },
+    balanceViewIncome: {
+        type: Number,
+        required: true
+    },
+    balanceViewProfit: {
+        type: Number,
+        required: true
+    },
     concept: {
         type: String,
-        required: true
-    },
-    dailyExpense: {
-        type: Number,
-        required: true
-    },
-    dailyIncome: {
-        type: Number,
-        required: true
-    },
-    dailyProfit: {
-        type: Number,
         required: true
     },
     date: {
@@ -27,6 +27,18 @@ const schema = new Schema({
     },
     dateString: {
         type: String,
+        required: true
+    },
+    salesViewExpense: {
+        type: Number,
+        required: true
+    },
+    salesViewIncome: {
+        type: Number,
+        required: true
+    },
+    salesViewProfit: {
+        type: Number,
         required: true
     }
 }, { timestamps: true })
