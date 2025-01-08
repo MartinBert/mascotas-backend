@@ -97,11 +97,7 @@ router.put('/:id', (request, response) => {
     let item = new Model(request.body)
     Model.findByIdAndUpdate(
         request.body._id,
-        {
-            dailyExpense: request.body.dailyExpense,
-            dailyIncome: request.body.dailyIncome,
-            dailyProfit: request.body.dailyProfit
-        },
+        request.body,
         { new: true }, (error) => {
             if (error) return response.status(500).json(errorResponse(error))
             return response.status(200).json(successWithItems(item))
