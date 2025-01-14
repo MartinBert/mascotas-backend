@@ -41,7 +41,7 @@ router.delete('/:id', (request, response) => {
 // Get outputs list
 router.get('/', (request, response) => {
     const populateParams = ['usuario']
-    const sortParams = {param: 'fecha', direction: -1}
+    const sortParams = {fecha: -1}
     Model
         .paginate(
             generateQuery(request),

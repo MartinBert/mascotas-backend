@@ -39,7 +39,7 @@ router.delete('/:id', (request, response) => {
 
 // Get business statistics
 router.get('/', (request, response) => {
-    const sortParams = { param: 'createdAt', direction: -1 }
+    const sortParams = { createdAt: -1 }
     Model
         .paginate(
             generateQuery(request),

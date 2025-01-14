@@ -39,7 +39,7 @@ router.delete('/:id', (request, response) => {
 // Get fiscal notes list
 router.get('/', (request, response) => {
     const populateParams = ['documento', 'renglones', 'usuario']
-    const sortParams = { param: '-indice', direction: -1 }
+    const sortParams = { index: -1 }
     Model
         .paginate(
             generateQuery(request),

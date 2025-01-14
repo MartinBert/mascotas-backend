@@ -31,7 +31,7 @@ router.delete('/:id', (request, response) => {
 
 // Get Sales Areas list
 router.get('/', (request, response) => {
-    const sortParams = {param: 'name', direction: 1}
+    const sortParams = { name: 1 }
     Model
         .paginate(
             generateQuery(request),

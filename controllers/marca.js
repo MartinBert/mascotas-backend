@@ -30,7 +30,7 @@ router.delete('/:id', (request, response) => {
 
 // Get marcas list
 router.get('/', (request, response) => {
-    const sortParams = { param: 'nombre', direction: 1 }
+    const sortParams = { nombre: 1 }
     Model
         .paginate(
             generateQuery(request),

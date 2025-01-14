@@ -39,7 +39,7 @@ router.delete('/:id', (request, response) => {
 // Get products list
 router.get('/', (request, response) => {
     const populateParams = ['rubro', 'marca', 'imagenes', 'unidadMedida']
-    const sortParams = {param: '_id', direction: -1}
+    const sortParams = { rubro: 1, marca: 1, nombre: 1 }
     Model
         .paginate(
             generateQuery(request),

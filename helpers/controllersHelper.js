@@ -35,7 +35,7 @@ const paginationParams = (
         limit: request.query.limit || 1000000,
         page: request.query.page || 1,
         populate: populateParams,
-        sort: sortParams ? { [sortParams.param]: sortParams.direction } : null
+        sort: sortParams ?? null
     }
 }
 

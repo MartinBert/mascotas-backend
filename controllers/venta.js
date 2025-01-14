@@ -37,7 +37,7 @@ router.get('/', (request, response) => {
         'renglones',
         'usuario'
     ]
-    const sortParams = { param: 'fechaEmision', direction: -1 }
+    const sortParams = { fechaEmision: -1 }
     Model
         .paginate(
             generateQuery(request),
