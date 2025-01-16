@@ -39,7 +39,7 @@ router.delete('/:id', (request, response) => {
 
 // Get business statistics
 router.get('/', (request, response) => {
-    const sortParams = { createdAt: -1 }
+    const sortParams = { dateOrder: -1 }
     Model
         .paginate(
             generateQuery(request),
@@ -83,13 +83,24 @@ router.get('/recordsInfo/oldest', (request, response) => {
         })
 })
 
-// Save business statistics
+// Save one single business statistic
 router.post('/', (request, response) => {
     let item = new Model(request.body)
     item.save(error => {
         if (error) return response.status(500).json(errorResponse(error))
         return response.status(200).json(successResponse)
     })
+})
+
+// Save more than one business statistics
+router.post('/save_all', (request, response) => {
+    try {
+        Model.insertMany(request.body)
+        return response.status(200).json(successResponse)
+    } catch (error) {
+        console.log(error)
+        return response.status(500).json(errorResponse(error))
+    }
 })
 
 // Update business statistics

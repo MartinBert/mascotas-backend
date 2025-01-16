@@ -25,6 +25,10 @@ const schema = new Schema({
         type: Date,
         required: true
     },
+    dateOrder: {
+        type: Number,
+        required: true
+    },
     dateString: {
         type: String,
         required: true
