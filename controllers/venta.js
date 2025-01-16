@@ -157,7 +157,7 @@ router.get('/recordsInfo/quantity', (request, response) => {
     })
 })
 
-// Save new sale
+// Save one single sale
 router.post('/', (request, response) => {
     const item = new Model(request.body)
     item.renglones = request.body.renglones.map(renglon => new Renglon(renglon))
@@ -180,13 +180,45 @@ router.post('/', (request, response) => {
         })
 })
 
-// Update sale
+// Save more than one sale
+router.post('/save_all', (request, response) => {
+    try {
+        const sales = request.body
+        for (let index = 0; index < sales.length; index++) {
+            const lines = sales[index].renglones
+            Renglon.insertMany(lines)
+        }
+        Model.insertMany(sales)
+        return response.status(200).json(successResponse)
+    } catch (error) {
+        console.log(error)
+        return response.status(500).json(errorResponse(error))
+    }
+})
+
+// Update one single sale
 router.put('/:id', (request, response) => {
     let item = new Model(request.body)
     Model.findOneAndUpdate({ _id: request.params.id }, item, { new: true }, (error) => {
         if (error) return response.status(500).json(errorResponse(error))
         return response.status(200).json(successResponse)
     })
+})
+
+// Update more than one sale
+router.put('/edit_all', (request, response) => {
+    try {
+        const sales = request.body
+        for (let index = 0; index < sales.length; index++) {
+            const lines = sales[index].renglones
+            Renglon.updateMany(lines)
+        }
+        Model.updateMany(sales)
+        return response.status(200).json(successResponse)
+    } catch (error) {
+        console.log(error)
+        return response.status(500).json(errorResponse(error))
+    }
 })
 
 module.exports = router
