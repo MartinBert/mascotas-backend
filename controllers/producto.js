@@ -39,7 +39,7 @@ router.delete('/:id', (request, response) => {
 // Get products list
 router.get('/', (request, response) => {
     const populateParams = ['rubro', 'marca', 'imagenes', 'unidadMedida']
-    const sortParams = { rubro: 1, marca: 1, nombre: 1 }
+    const sortParams = { createdAt: 1 }
     Model
         .paginate(
             generateQuery(request),
@@ -66,6 +66,20 @@ router.get('/barcode/:barcode', (request, response) => {
         if (error) return response.status(500).send(errorResponse(error))
         return response.status(200).send(successWithItems(item))
     })
+})
+
+// Get products list for catalogue
+router.get('/catalogue', (request, response) => {
+    const populateParams = ['rubro', 'marca', 'imagenes', 'unidadMedida']
+    const sortParams = { rubro: 1, marca: 1, nombre: 1 }
+    Model
+        .paginate(
+            generateQuery(request),
+            paginationParams(request, populateParams, sortParams),
+            (error, items) => {
+                if (error) return response.status(500).json(errorResponse(error))
+                return response.status(200).json(items)
+            })
 })
 
 // Get productos list id
