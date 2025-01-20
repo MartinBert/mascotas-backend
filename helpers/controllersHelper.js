@@ -10,7 +10,7 @@ const verifyFilters = (queryData) => {
 }
 
 const generateQuery = (request) => {
-    const filters = request.query.filters || null
+    const filters = request.query.filters ?? null
     const queryData = JSON.parse(filters)
     const query = {}
     const existsFilters = verifyFilters(queryData)

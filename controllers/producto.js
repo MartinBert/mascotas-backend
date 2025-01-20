@@ -69,9 +69,10 @@ router.get('/barcode/:barcode', (request, response) => {
 })
 
 // Get products list for catalogue
-router.get('/catalogue', (request, response) => {
+router.get('/catalogue/records', (request, response) => {
     const populateParams = ['rubro', 'marca', 'imagenes', 'unidadMedida']
     const sortParams = { rubro: 1, marca: 1, nombre: 1 }
+
     Model
         .paginate(
             generateQuery(request),
