@@ -214,7 +214,17 @@ router.put('/sales/edit_all', (request, response) => {
             const bulkOptionsForLines = lines.map(line => ({
                 updateOne: {
                     filter: { _id: line._id },
-                    update: { $set: line },
+                    update: { $unset: {
+                        importeDescuentoRenglon: 1,
+                        importeRecargoRenglon: 1,
+                        productoCodigoBarras: 1,
+                        productoFraccionamiento: 1,
+                        productoImporteIva: 1,
+                        productoNombre: 1,
+                        productoPorcentajeIva: 1,
+                        productoPrecioUnitario: 1,
+                        totalRenglon: 1
+                    }, $set: line },
                     upsert: true
                 }
             }))
