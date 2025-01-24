@@ -206,14 +206,28 @@ router.put('/:id', (request, response) => {
 })
 
 // Update more than one sale
-router.put('/edit_all', (request, response) => {
+router.put('/sales/edit_all', (request, response) => {
     try {
         const sales = request.body
         for (let index = 0; index < sales.length; index++) {
             const lines = sales[index].renglones
-            Renglon.updateMany(lines)
+            const bulkOptionsForLines = lines.map(line => ({
+                updateOne: {
+                    filter: { _id: line._id },
+                    update: { $set: line },
+                    upsert: true
+                }
+            }))
+            Renglon.bulkWrite(bulkOptionsForLines)
         }
-        Model.updateMany(sales)
+        const bulkOptionsForSales = sales.map(sale => ({
+            updateOne: {
+                filter: { _id: sale._id },
+                update: { $set: sale },
+                upsert: true
+            }
+        }))
+        Model.bulkWrite(bulkOptionsForSales)
         return response.status(200).json(successResponse)
     } catch (error) {
         console.log(error)
