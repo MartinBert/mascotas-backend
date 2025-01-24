@@ -181,7 +181,7 @@ router.post('/', (request, response) => {
 })
 
 // Save more than one sale
-router.post('/save_all', (request, response) => {
+router.post('/sales/save_all', (request, response) => {
     try {
         const sales = request.body
         for (let index = 0; index < sales.length; index++) {

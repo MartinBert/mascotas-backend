@@ -93,7 +93,7 @@ router.post('/', (request, response) => {
 })
 
 // Save more than one business statistics
-router.post('/save_all', (request, response) => {
+router.post('/statistics/save_all', (request, response) => {
     try {
         Model.insertMany(request.body)
         return response.status(200).json(successResponse)
