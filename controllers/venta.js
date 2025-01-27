@@ -209,7 +209,6 @@ router.put('/:id', (request, response) => {
 router.put('/sales/edit_all', (request, response) => {
     try {
         const sales = request.body
-        console.log(sales)
         for (let index = 0; index < sales.length; index++) {
             const lines = sales[index].renglones
             const bulkOptionsForLines = lines.map(line => ({

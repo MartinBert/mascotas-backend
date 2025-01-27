@@ -112,13 +112,32 @@ router.post('/', (request, response) => {
     })
 })
 
-// Edit output
+// Edit one single output
 router.put('/', (request, response) => {
     let item = new Model(request.body)
     Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error, item) => {
         if (error) return response.status(500).send(errorResponse(error))
         return response.status(200).send(successWithItems(item))
     })
+})
+
+// Update more than one output
+router.put('/outputs/edit_all', (request, response) => {
+    try {
+        const outputs = request.body
+        const bulkOptions = outputs.map(output => ({
+            updateOne: {
+                filter: { _id: output._id },
+                update: { $set: output },
+                upsert: true
+            }
+        }))
+        Model.bulkWrite(bulkOptions)
+        return response.status(200).json(successResponse)
+    } catch (error) {
+        console.log(error)
+        return response.status(500).json(errorResponse(error))
+    }
 })
 
 module.exports = router
