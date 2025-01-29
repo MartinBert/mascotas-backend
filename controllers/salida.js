@@ -121,24 +121,34 @@ router.put('/', (request, response) => {
     })
 })
 
+// Delete specific properties from all outputs
+router.put('/outputs/delete_props_from_all', (request, response) => {
+    try {
+        const propertiesToUnset = {}
+        for (let index = 0; index < request.body.length; index++) {
+            const prop = request.body[index]
+            propertiesToUnset[prop] = 1
+        }
+        Model.updateMany({}, { $unset: propertiesToUnset })
+        return response.status(200).json(successResponse)
+    } catch (error) {
+        console.log(error)
+        return response.status(500).json(errorResponse(error))
+    }
+})
+
 // Update more than one output
 router.put('/outputs/edit_all', (request, response) => {
     try {
-        Model.updateMany({}, { $unset: { 'ganancia': 1 } } )
-        // const outputs = request.body
-        // const bulkOptions = outputs.map(output => ({
-        //     updateOne: {
-        //         filter: { _id: output._id },
-        //         update: {
-        //             $unset: {
-        //                 ganancia: 1
-        //             },
-        //             $set: output
-        //         },
-        //         upsert: true
-        //     }
-        // }))
-        // Model.bulkWrite(bulkOptions)
+        const outputs = request.body
+        const bulkOptions = outputs.map(output => ({
+            updateOne: {
+                filter: { _id: output._id },
+                update: { $set: output },
+                upsert: true
+            }
+        }))
+        Model.bulkWrite(bulkOptions)
         return response.status(200).json(successResponse)
     } catch (error) {
         console.log(error)

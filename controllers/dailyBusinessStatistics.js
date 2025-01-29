@@ -37,6 +37,17 @@ router.delete('/:id', (request, response) => {
     })
 })
 
+// Delete all daily business statistics
+router.delete('/records/delete_all', (request, response) => {
+    try {
+        Model.deleteMany({})
+        return response.status(200).json(successResponse)
+    } catch (error) {
+        console.log(error)
+        return response.status(500).json(errorResponse(error))
+    }
+})
+
 // Get business statistics
 router.get('/', (request, response) => {
     const sortParams = { dateOrder: -1 }
