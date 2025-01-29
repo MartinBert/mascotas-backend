@@ -124,7 +124,7 @@ router.put('/', (request, response) => {
 // Update more than one output
 router.put('/outputs/edit_all', (request, response) => {
     try {
-        Model.updateMany({}, { $unset: { ganancia: 1 } } )
+        Model.updateMany({}, { $unset: { 'ganancia': 1 } } )
         // const outputs = request.body
         // const bulkOptions = outputs.map(output => ({
         //     updateOne: {
