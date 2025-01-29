@@ -124,20 +124,21 @@ router.put('/', (request, response) => {
 // Update more than one output
 router.put('/outputs/edit_all', (request, response) => {
     try {
-        const outputs = request.body
-        const bulkOptions = outputs.map(output => ({
-            updateOne: {
-                filter: { _id: output._id },
-                update: {
-                    $unset: {
-                        ganancia: 1
-                    },
-                    $set: output
-                },
-                upsert: true
-            }
-        }))
-        Model.bulkWrite(bulkOptions)
+        Model.updateMany({}, { $unset: { ganancia: 1 } } )
+        // const outputs = request.body
+        // const bulkOptions = outputs.map(output => ({
+        //     updateOne: {
+        //         filter: { _id: output._id },
+        //         update: {
+        //             $unset: {
+        //                 ganancia: 1
+        //             },
+        //             $set: output
+        //         },
+        //         upsert: true
+        //     }
+        // }))
+        // Model.bulkWrite(bulkOptions)
         return response.status(200).json(successResponse)
     } catch (error) {
         console.log(error)
