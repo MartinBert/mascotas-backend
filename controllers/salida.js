@@ -128,7 +128,12 @@ router.put('/outputs/edit_all', (request, response) => {
         const bulkOptions = outputs.map(output => ({
             updateOne: {
                 filter: { _id: output._id },
-                update: { $set: output },
+                update: {
+                    $unset: {
+                        ganancia: 1
+                    },
+                    $set: output
+                },
                 upsert: true
             }
         }))

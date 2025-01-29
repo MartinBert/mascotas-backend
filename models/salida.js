@@ -21,11 +21,11 @@ const schema = new Schema({
         type: String,
         required: true
     },
-    ganancia: {
+    gananciaNeta: {
         type: Number,
         required: true
     },
-    gananciaNeta: {
+    ingreso: {
         type: Number,
         required: true
     },
