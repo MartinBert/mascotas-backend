@@ -86,6 +86,42 @@ const schema = new Schema({
     recargo: {
         type: Number,
         required: true
+    },
+    importeDescuentoRenglon: {
+        type: Number,
+        required: false
+    },
+    importeRecargoRenglon: {
+        type: Number,
+        required: false
+    },
+    productoCodigoBarras: {
+        type: Number,
+        required: false
+    },
+    productoFraccionamiento: {
+        type: Number,
+        required: false
+    },
+    productoImporteIva: {
+        type: Number,
+        required: false
+    },
+    productoNombre: {
+        type: Number,
+        required: false
+    },
+    productoPorcentajeIva: {
+        type: Number,
+        required: false
+    },
+    productoPrecioUnitario: {
+        type: Number,
+        required: false
+    },
+    totalRenglon: {
+        type: Number,
+        required: false
     }
 }, { timestamps: true })
 

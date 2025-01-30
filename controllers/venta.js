@@ -205,6 +205,19 @@ router.put('/:id', (request, response) => {
     })
 })
 
+// Delete specific properties from all sales
+router.put('/sales/delete_props_from_all', (request, response) => {
+    const propertiesToUnset = {}
+    for (let index = 0; index < request.body.length; index++) {
+        const prop = request.body[index]
+        propertiesToUnset[prop] = 1
+    }
+    Model.updateMany({}, { $unset: propertiesToUnset }, {}, (error, result) => {
+        if (error) return response.status(500).send(errorResponse(error))
+        return response.status(200).send(successWithItems(result))
+    })
+})
+
 // Update more than one sale
 router.put('/sales/edit_all', (request, response) => {
     try {
@@ -214,20 +227,7 @@ router.put('/sales/edit_all', (request, response) => {
             const bulkOptionsForLines = lines.map(line => ({
                 updateOne: {
                     filter: { _id: line._id },
-                    update: {
-                        $unset: {
-                            importeDescuentoRenglon: 1,
-                            importeRecargoRenglon: 1,
-                            productoCodigoBarras: 1,
-                            productoFraccionamiento: 1,
-                            productoImporteIva: 1,
-                            productoNombre: 1,
-                            productoPorcentajeIva: 1,
-                            productoPrecioUnitario: 1,
-                            totalRenglon: 1
-                        },
-                        $set: line
-                    },
+                    update: { $set: line },
                     upsert: true
                 }
             }))
@@ -246,6 +246,19 @@ router.put('/sales/edit_all', (request, response) => {
         console.log(error)
         return response.status(500).json(errorResponse(error))
     }
+})
+
+// Delete specific properties from all lines of sales
+router.put('/sales/lines/delete_props_from_all', (request, response) => {
+    const propertiesToUnset = {}
+    for (let index = 0; index < request.body.length; index++) {
+        const prop = request.body[index]
+        propertiesToUnset[prop] = 1
+    }
+    Renglon.updateMany({}, { $unset: propertiesToUnset }, {}, (error, result) => {
+        if (error) return response.status(500).send(errorResponse(error))
+        return response.status(200).send(successWithItems(result))
+    })
 })
 
 module.exports = router
