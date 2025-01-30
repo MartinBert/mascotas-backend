@@ -34,11 +34,7 @@ const schema = new Schema({
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'usuario'
-    },
-    ganancia: {
-        type: Number,
-        required: false
-    },
+    }
 }, { timestamps: true })
 
 schema.plugin(mongoosePaginate)

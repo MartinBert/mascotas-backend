@@ -255,10 +255,22 @@ router.put('/sales/lines/delete_props_from_all', (request, response) => {
         const prop = request.body[index]
         propertiesToUnset[prop] = 1
     }
-    Renglon.updateMany({}, { $unset: propertiesToUnset }, {}, (error, result) => {
-        if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(result))
+    Model.find({}).exec((error, sales) => {
+        if (error) return response.status(500).json(errorResponse(error))
+        for (let index = 0; index < sales.length; index++) {
+            const lines = sales[index].renglones
+
+            const bulkOptionsForLines = lines.map(line => ({
+                updateOne: {
+                    filter: { _id: line._id },
+                    update: { $unset: propertiesToUnset },
+                    upsert: true
+                }
+            }))
+            Renglon.bulkWrite(bulkOptionsForLines)
+        }
     })
+    return response.status(200).json(successResponse)
 })
 
 module.exports = router
