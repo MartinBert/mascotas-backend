@@ -163,4 +163,23 @@ router.put('/modifyStock', (request, response) => {
     })
 })
 
+// Update more than one product
+router.put('/products/edit_all', (request, response) => {
+    try {
+        const products = request.body
+        const bulkOptions = products.map(product => ({
+            updateOne: {
+                filter: { _id: product._id },
+                update: { $set: product },
+                upsert: true
+            }
+        }))
+        Model.bulkWrite(bulkOptions)
+        return response.status(200).json(successResponse)
+    } catch (error) {
+        console.log(error)
+        return response.status(500).json(errorResponse(error))
+    }
+})
+
 module.exports = router
