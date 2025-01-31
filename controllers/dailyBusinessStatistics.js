@@ -29,17 +29,17 @@ const successWithItems = (items) => {
 }
 
 
-// Delete business statistics
-router.delete('/:id', (request, response) => {
-    Model.deleteOne({ _id: request.params.id }, (error) => {
+// Delete all daily business statistics
+router.delete('/', (request, response) => {
+    Model.deleteMany({}, (error) => {
         if (error) return response.status(500).json(errorResponse(error))
         return response.status(200).json(successResponse)
     })
 })
 
-// Delete all daily business statistics
-router.delete('/', (request, response) => {
-    Model.deleteMany({}, {}, (error) => {
+// Delete business statistics
+router.delete('/:id', (request, response) => {
+    Model.deleteOne({ _id: request.params.id }, (error) => {
         if (error) return response.status(500).json(errorResponse(error))
         return response.status(200).json(successResponse)
     })
