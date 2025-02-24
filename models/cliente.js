@@ -5,21 +5,25 @@ const Schema   = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
-    razonSocial: {
+    ciudad: {
         type: String,
         required: true
     },
+    condicionFiscal: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'condicionfiscal'
+    },
     cuit: {
+        type: String,
+        required: true
+    },
+    direccion: {
         type: String,
         required: true
     },
     documentoReceptor: {
         type: Number,
         required: true
-    },
-    condicionFiscal: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'condicionfiscal'
     },
     email: {
         type: String,
@@ -28,20 +32,20 @@ const schema = new Schema({
     normalizedBusinessName: {
         type: String,
         required: true
+    },    
+    provincia: {
+        type: String,
+        required: true
+    },
+    razonSocial: {
+        type: String,
+        required: true
+    },
+    receiverIvaCondition: {
+        type: Number,
+        required: true
     },
     telefono: {
-        type: String,
-        required: true
-    },
-    direccion: {
-        type: String,
-        required: true
-    },
-    ciudad: {
-        type: String,
-        required: true
-    },
-    provincia: {
         type: String,
         required: true
     }

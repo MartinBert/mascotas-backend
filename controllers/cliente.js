@@ -60,7 +60,7 @@ router.get('/multiple/idList', (request, response) => {
     })
 })
 
-// Save new cliente
+// Save new client
 router.post('/', (request, response) => {
     let item = new Model(request.body)
     item.save((error) => {
@@ -71,13 +71,32 @@ router.post('/', (request, response) => {
     })
 })
 
-// Update cliente
+// Update one single client
 router.put('/:id', (request, response) => {
     let item = new Model(request.body)
     Model.findOneAndUpdate({ _id: request.body._id }, item, { new: true }, (error) => {
         if (error) return response.status(500).json(errorResponse(error))
         return response.status(200).json(successResponse)
     })
+})
+
+// Update more than one client
+router.put('/clients/edit_all', (request, response) => {
+    try {
+        const clients = request.body
+        const bulkOptions = clients.map(client => ({
+            updateOne: {
+                filter: { _id: client._id },
+                update: { $set: client },
+                upsert: true
+            }
+        }))
+        Model.bulkWrite(bulkOptions)
+        return response.status(200).json(successResponse)
+    } catch (error) {
+        console.log(error)
+        return response.status(500).json(errorResponse(error))
+    }
 })
 
 module.exports = router

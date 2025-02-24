@@ -23,6 +23,10 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+    cantidadUnidadesFraccionadas: {
+        type: Number,
+        required: true
+    },
     codigoBarras: {
         type: String,
         required: true
@@ -64,6 +68,10 @@ const schema = new Schema({
         required: false
     },
     precioBruto: {
+        type: Number,
+        required: true
+    },
+    precioListaUnitario: {
         type: Number,
         required: true
     },
