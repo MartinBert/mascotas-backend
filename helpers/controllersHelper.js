@@ -119,7 +119,12 @@ const processCountRecords = async (caseProps) => {
     try {
         const { modelName } = caseProps
         const Model = getModel(modelName)
-        response = Model.estimatedDocumentCount(reply)
+        response = await Model
+            .estimatedDocumentCount()
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
 
     } catch (error) {
         console.error(error)
@@ -144,8 +149,12 @@ const processEdit = async (caseProps) => {
                 upsert: true
             }
         }))
-        Model.bulkWrite(bulkOptions)
-        response = reply()
+        response = await Model
+            .bulkWrite(bulkOptions)
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
 
     } catch (error) {
         console.log(error)
@@ -162,10 +171,13 @@ const processFindAll = async (caseProps) => {
     try {
         const { data: { sortParams }, modelName } = caseProps
         const Model = getModel(modelName)
-        response = Model
+        response = await Model
             .find({})
             .sort(sortParams)
-            .exec(reply)
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
 
     } catch (error) {
         console.error(error)
@@ -182,7 +194,7 @@ const processFindAllByFilters = async (caseProps) => {
     try {
         const { data: { request, sortParams }, modelName } = caseProps
         const Model = getModel(modelName)
-        response = Model
+        response = await Model
             .paginate(
                 generateQuery(request),
                 paginationParams(request, null, sortParams),
@@ -202,9 +214,12 @@ const processFindById = async (caseProps) => {
     try {
         const { data: { id }, modelName } = caseProps
         const Model = getModel(modelName)
-        response = Model
+        response = await Model
             .findById(id)
-            .exec(reply)
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
 
     } catch (error) {
         console.error(error)
@@ -221,11 +236,14 @@ const processFindNewer = async (caseProps) => {
     try {
         const { modelName } = caseProps
         const Model = getModel(modelName)
-        response = Model
+        response = await Model
             .find({})
             .sort({ createdAt: -1 })
             .limit(1)
-            .exec(reply)
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
 
     } catch (error) {
         console.error(error)
@@ -242,20 +260,20 @@ const processFindOldest = async (caseProps) => {
     try {
         const { modelName } = caseProps
         const Model = getModel(modelName)
-        Model
+        response = await Model
             .find({})
             .sort({ createdAt: 1 })
             .limit(1)
-            .exec((error, replyData) => {
-                response = reply(error, replyData)
-            })
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
 
     } catch (error) {
         console.error(error)
         response = reply(error)
 
     } finally {
-        console.log(response)
         return response
     }
 }
@@ -289,7 +307,12 @@ const processRemove = async (caseProps) => {
         const { data: { ids }, modelName } = caseProps
         const Model = getModel(modelName)
         const idsToRemove = Array.isArray(ids) ? ids : [ids]
-        response = await Model.deleteMany({ _id: { $in: idsToRemove } }, reply)
+        response = await Model
+            .deleteMany({ _id: { $in: idsToRemove } })
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
 
     } catch (error) {
         console.error(error)
@@ -312,7 +335,12 @@ const processRemoveProps = async (caseProps) => {
             const prop = propsToDelete[index]
             propertiesToUnset[prop] = 1
         }
-        response = await Model.updateMany({}, { $unset: propertiesToUnset }, {}, reply)
+        response = await Model
+            .updateMany({}, { $unset: propertiesToUnset }, {})
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
 
     } catch (error) {
         console.error(error)
@@ -330,7 +358,12 @@ const processSave = async (caseProps) => {
         const { data: { records } , modelName } = caseProps
         const Model = getModel(modelName)
         const recordsToSave = Array.isArray(records) ? records : [records]
-        response = await Model.insertMany(recordsToSave)
+        response = await Model
+            .insertMany(recordsToSave)
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
 
     } catch (error) {
         console.error(error)
