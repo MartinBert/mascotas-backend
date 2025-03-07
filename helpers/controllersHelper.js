@@ -1,4 +1,34 @@
 'use strict'
+const modelsData = require('../models')
+
+const services = {
+    countRecords: 'countRecords',
+    edit: 'edit',
+    findAll: 'findAll',
+    findAllByFilters: 'findAllByFilters',
+    findById: 'findById',
+    findNewer: 'findNewer',
+    findOldest: 'findOldest',
+    findPaginated: 'findPaginated',
+    remove: 'remove',
+    removeProps: 'removeProps',
+    save: 'save'
+}
+
+const getModel = (modelName) => {
+    const modelItem = modelsData.find(modelItem => modelItem.name === modelName)
+    const model = modelItem.model
+    return model
+}
+
+const reply = (error, replyData = null) => {
+    const response = {
+        code: error ? 500 : 200,
+        data: error ?? replyData,
+        message: error ? 'Error' : 'OK'
+    }
+    return response
+}
 
 const verifyFilters = (queryData) => {
     if (!queryData) return false
@@ -39,9 +69,283 @@ const paginationParams = (
     }
 }
 
+const processRequest = async (props) => {
+    const { service, ...caseProps } = props
+    let response
+    switch (service) {
+        case services.countRecords:
+            response = await processCountRecords(caseProps)
+            break
+        case services.edit:
+            response = await processEdit(caseProps)
+            break
+        case services.findAll:
+            response = await processFindAll(caseProps)
+            break
+        case services.findAllByFilters:
+            response = await processFindAllByFilters(caseProps)
+            break
+        case services.findById:
+            response = await processFindById(caseProps)
+            break
+        case services.findNewer:
+            response = await processFindNewer(caseProps)
+            break
+        case services.findOldest:
+            response = await processFindOldest(caseProps)
+            break
+        case services.findPaginated:
+            response = await processFindPaginated(caseProps)
+            break
+        case services.remove:
+            response = await processRemove(caseProps)
+            break
+        case services.removeProps:
+            response = await processRemoveProps(caseProps)
+            break
+        case services.save:
+            response = await processSave(caseProps)
+            break
+        default:
+            response = null
+            break
+    }
+    return response
+}
+
+const processCountRecords = async (caseProps) => {
+    let response
+
+    try {
+        const { modelName } = caseProps
+        const Model = getModel(modelName)
+        response = Model.estimatedDocumentCount(reply)
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processEdit = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { records }, modelName } = caseProps
+        const Model = getModel(modelName)
+        const recordsToEdit = Array.isArray(records) ? records : [records]
+        const bulkOptions = recordsToEdit.map(record => ({
+            updateOne: {
+                filter: { _id: record._id },
+                update: { $set: record },
+                upsert: true
+            }
+        }))
+        Model.bulkWrite(bulkOptions)
+        response = reply()
+
+    } catch (error) {
+        console.log(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindAll = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { sortParams }, modelName } = caseProps
+        const Model = getModel(modelName)
+        response = Model
+            .find({})
+            .sort(sortParams)
+            .exec(reply)
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindAllByFilters = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { request, sortParams }, modelName } = caseProps
+        const Model = getModel(modelName)
+        response = Model
+            .paginate(
+                generateQuery(request),
+                paginationParams(request, null, sortParams),
+                reply
+            )
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindById = async (caseProps) => {
+    try {
+        const { data: { id }, modelName } = caseProps
+        const Model = getModel(modelName)
+        response = Model
+            .findById(id)
+            .exec(reply)
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindNewer = async (caseProps) => {
+    let response
+
+    try {
+        const { modelName } = caseProps
+        const Model = getModel(modelName)
+        response = Model
+            .find({})
+            .sort({ createdAt: -1 })
+            .limit(1)
+            .exec(reply)
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindOldest = async (caseProps) => {
+    let response
+
+    try {
+        const { modelName } = caseProps
+        const Model = getModel(modelName)
+        Model
+            .find({})
+            .sort({ createdAt: 1 })
+            .limit(1)
+            .exec((error, replyData) => {
+                response = reply(error, replyData)
+            })
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        console.log(response)
+        return response
+    }
+}
+
+const processFindPaginated = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { request, sortParams }, modelName } = caseProps
+        const Model = getModel(modelName)
+        response = await Model
+            .paginate(
+                generateQuery(request),
+                paginationParams(request, null, sortParams),
+                reply
+            )
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processRemove = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { ids }, modelName } = caseProps
+        const Model = getModel(modelName)
+        const idsToRemove = Array.isArray(ids) ? ids : [ids]
+        response = await Model.deleteMany({ _id: { $in: idsToRemove } }, reply)
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processRemoveProps = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { props }, modelName } = caseProps
+        const Model = getModel(modelName)
+        const propsToDelete = Array.isArray(props) ? props : [props]
+        const propertiesToUnset = {}
+        for (let index = 0; index < propsToDelete.length; index++) {
+            const prop = propsToDelete[index]
+            propertiesToUnset[prop] = 1
+        }
+        response = await Model.updateMany({}, { $unset: propertiesToUnset }, {}, reply)
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processSave = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { records } , modelName } = caseProps
+        const Model = getModel(modelName)
+        const recordsToSave = Array.isArray(records) ? records : [records]
+        response = await Model.insertMany(recordsToSave)
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
 const controllersHelper = {
     generateQuery,
-    paginationParams
+    paginationParams,
+    processRequest,
+    services
 }
 
 module.exports = controllersHelper
