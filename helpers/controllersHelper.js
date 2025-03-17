@@ -1,5 +1,8 @@
 'use strict'
+const mongoose = require('mongoose')
 const modelsData = require('../models')
+
+const { isValidObjectId } = mongoose
 
 const services = {
     countRecords: 'countRecords',
@@ -47,12 +50,15 @@ const generateQuery = (request) => {
     if (!existsFilters) return query
     const queryKeys = Object.keys(queryData)
     const queryValues = Object.values(queryData)
-    queryKeys.forEach(function (objKey, index) {
+    for (let index = 0; index < queryKeys.length; index++) {
+        const key = queryKeys[index]
         const value = queryValues[index]
         const valueIsString = typeof value === 'string'
-        if (value && valueIsString) query[objKey] = new RegExp(value, 'i')
-        else if (value && !valueIsString) query[objKey] = value
-    })
+        if (value) {
+            if (valueIsString) query[key] = new RegExp(value, 'i')
+            else query[key] = value
+        }
+    }
     return query
 }
 

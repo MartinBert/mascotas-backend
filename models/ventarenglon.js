@@ -87,6 +87,11 @@ const schema = new Schema({
         type: Number,
         required: true
     },
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'producto',
+        required: true
+    },
     profit: {
         type: Number,
         required: true
