@@ -33,7 +33,6 @@ router.delete('/:id', (request, response) => {
 router.get('/', (request, response) => {
     const populateParams = [
         'documento',
-        'productos',
         'renglones',
         'usuario'
     ]
@@ -212,9 +211,9 @@ router.put('/sales/delete_props_from_all', (request, response) => {
         const prop = request.body[index]
         propertiesToUnset[prop] = 1
     }
-    Model.updateMany({}, { $unset: propertiesToUnset }, {}, (error, result) => {
+    Model.updateMany({}, { $unset: propertiesToUnset }, {}, (error) => {
         if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(result))
+        return response.status(200).send(successResponse)
     })
 })
 
