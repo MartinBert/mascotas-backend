@@ -178,11 +178,6 @@ const schema = new Schema({
         type: Number,
         required: false
     },
-    // productos: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'producto',
-    //     required: true
-    // }],
     profit: {
         type: Number,
         required: true
