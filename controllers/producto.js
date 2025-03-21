@@ -52,7 +52,17 @@ router.get('/', (request, response) => {
 
 // Get product by id
 router.get('/:id', (request, response) => {
-    Model.findById(request.params.id)
+    Model.find(request.params.id)
+        .populate(['imagenes', 'marca', 'rubro', 'unidadMedida'])
+        .exec((error, item) => {
+            if (error) return response.status(500).send(errorResponse(error))
+            return response.status(200).send(successWithItems(item))
+        })
+})
+
+// Get product by name
+router.get('/name/:name', (request, response) => {
+    Model.find({ nombre: request.params.name })
         .populate(['imagenes', 'marca', 'rubro', 'unidadMedida'])
         .exec((error, item) => {
             if (error) return response.status(500).send(errorResponse(error))
