@@ -52,7 +52,7 @@ router.get('/', (request, response) => {
 
 // Get product by id
 router.get('/:id', (request, response) => {
-    Model.find(request.params.id)
+    Model.findById(request.params.id)
         .populate(['imagenes', 'marca', 'rubro', 'unidadMedida'])
         .exec((error, item) => {
             if (error) return response.status(500).send(errorResponse(error))
@@ -61,7 +61,7 @@ router.get('/:id', (request, response) => {
 })
 
 // Get product by name
-router.get('/name/:name', (request, response) => {
+router.get('/product/name/:name', (request, response) => {
     Model.find({ nombre: request.params.name })
         .populate(['imagenes', 'marca', 'rubro', 'unidadMedida'])
         .exec((error, item) => {
