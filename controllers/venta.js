@@ -7,6 +7,7 @@ const {
     generateQuery,
     paginationParams
 } = require('../helpers/controllersHelper')
+const { default: mongoose } = require('mongoose')
 
 const errorResponse = (error) => {
     return {
@@ -46,6 +47,27 @@ router.get('/', (request, response) => {
                 return response.status(200).json(items)
             }
         )
+})
+
+// Get sales by filters
+router.get('/getAllByFilters', (request, response) => {
+    const populateParams = [
+        'documento',
+        'renglones',
+        'usuario'
+    ]
+    const sortParams = { fechaEmision: -1 }
+    const query = generateQuery(request)
+    // const renglones = { $match: { productId: mongoose.Types.ObjectId('67a3dbaebf1fc67a7b5e5620') } }
+  
+    Model
+        .find(query)
+        .populate(populateParams)
+        .sort(sortParams)
+        .exec((error, items) => {
+            if (error) return response.status(500).json(errorResponse(error))
+            return response.json(items)
+        })
 })
 
 // Get sale by id
