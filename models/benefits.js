@@ -5,6 +5,14 @@ const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 const schema = new Schema({
+    activeBenefits: {
+        type: {
+            fixedAmountBonus: Boolean,
+            percentageBonus: Boolean,
+            productsBonus: Boolean
+        },
+        required: true
+    },
     description: {
         type: String,
         required: true
@@ -18,9 +26,21 @@ const schema = new Schema({
         required: true
     },
     productsBonus: [{
-        type: { id: mongoose.Schema.Types.ObjectId, quantity: Number },
+        type: {
+            id: mongoose.Schema.Types.ObjectId,
+            name: String,
+            quantity: Number
+        },
         required: true
     }],
+    purchaseAmountForActivation: {
+        type: Number,
+        required: true
+    },
+    purchaseConditionsForActivation: {
+        type: { amount: Boolean, quantity: Boolean },
+        required: true
+    },
     purchaseQuantityForActivation: {
         type: Number,
         required: true
