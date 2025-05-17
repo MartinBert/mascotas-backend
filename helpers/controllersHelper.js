@@ -1,27 +1,48 @@
 'use strict'
-const mongoose = require('mongoose')
 const modelsData = require('../models')
+const { getModelByTenant } = require('../config')
 
-const { isValidObjectId } = mongoose
 
+const defaultTenantsModelName = 'tenants'
+const defaultUsersModelName = 'users'
 const services = {
     countRecords: 'countRecords',
+    deletePropsFromAllLines: 'deletePropsFromAllLines',
     edit: 'edit',
     findAll: 'findAll',
     findAllByFilters: 'findAllByFilters',
+    findAllForCatalogue: 'findAllForCatalogue',
+    findAllUsers: 'findAllUsers',
     findById: 'findById',
+    findLastIndex: 'findLastIndex',
+    findLastVoucherNumber: 'findLastVoucherNumber',
     findNewer: 'findNewer',
+    findNewerSale: 'findNewerSale',
     findOldest: 'findOldest',
+    findOldestSale: 'findOldestSale',
     findPaginated: 'findPaginated',
+    modifyStock: 'modifyStock',
     remove: 'remove',
     removeProps: 'removeProps',
     save: 'save'
 }
 
-const getModel = (modelName) => {
+const getSchema = (modelName) => {
     const modelItem = modelsData.find(modelItem => modelItem.name === modelName)
-    const model = modelItem.model
-    return model
+    const schema = modelItem.schema
+    return schema
+}
+
+const getTenantsSchema = (modelName) => {
+    const modelItem = modelsData.find(modelItem => modelItem.name === defaultTenantsModelName)
+    const schema = modelItem.schema
+    return schema
+}
+
+const getUsersSchema = (modelName) => {
+    const modelItem = modelsData.find(modelItem => modelItem.name === defaultUsersModelName)
+    const schema = modelItem.schema
+    return schema
 }
 
 const reply = (error, replyData = null) => {
@@ -59,6 +80,7 @@ const generateQuery = (request) => {
             else query[key] = value
         }
     }
+    console.log(query)
     return query
 }
 
@@ -70,7 +92,7 @@ const paginationParams = (
     return {
         limit: request.query.limit || 1000000,
         page: request.query.page || 1,
-        populate: populateParams,
+        populate: populateParams ?? null,
         sort: sortParams ?? null
     }
 }
@@ -82,6 +104,9 @@ const processRequest = async (props) => {
         case services.countRecords:
             response = await processCountRecords(caseProps)
             break
+        case services.deletePropsFromAllLines:
+            response = await processDeletePropsFromAllLines(caseProps)
+            break
         case services.edit:
             response = await processEdit(caseProps)
             break
@@ -91,17 +116,38 @@ const processRequest = async (props) => {
         case services.findAllByFilters:
             response = await processFindAllByFilters(caseProps)
             break
+        case services.findAllForCatalogue:
+            response = await processFindAllForCatalogue(caseProps)
+            break
+        case services.findAllUsers:
+            response = await processFindAllUsers(caseProps)
+            break
         case services.findById:
             response = await processFindById(caseProps)
+            break
+        case services.findLastIndex:
+            response = await processFindLastIndex(caseProps)
+            break
+        case services.findLastVoucherNumber:
+            response = await processFindLastVoucherNumber(caseProps)
             break
         case services.findNewer:
             response = await processFindNewer(caseProps)
             break
+        case services.findNewerSale:
+            response = await processFindNewerSale(caseProps)
+            break
         case services.findOldest:
             response = await processFindOldest(caseProps)
             break
+        case services.findOldestSale:
+            response = await processFindOldestSale(caseProps)
+            break
         case services.findPaginated:
             response = await processFindPaginated(caseProps)
+            break
+        case services.modifyStock:
+            response = await processModifyStock(caseProps)
             break
         case services.remove:
             response = await processRemove(caseProps)
@@ -123,8 +169,9 @@ const processCountRecords = async (caseProps) => {
     let response
 
     try {
-        const { modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
             .estimatedDocumentCount()
             .then(
@@ -145,8 +192,9 @@ const processEdit = async (caseProps) => {
     let response
 
     try {
-        const { data: { records }, modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { records, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         const recordsToEdit = Array.isArray(records) ? records : [records]
         const bulkOptions = recordsToEdit.map(record => ({
             updateOne: {
@@ -175,11 +223,13 @@ const processFindAll = async (caseProps) => {
     let response
 
     try {
-        const { data: { sortParams }, modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
             .find({})
-            .sort(sortParams)
+            .sort(sortParams ?? { createdAt: -1 })
+            .populate(populateParams)
             .then(
                 (replyData) => reply(null, replyData),
                 (error) => reply(error)
@@ -198,12 +248,14 @@ const processFindAllByFilters = async (caseProps) => {
     let response
 
     try {
-        const { data: { request, sortParams }, modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { populateParams, request, sortParams, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const sortBy = sortParams ?? { createdAt: -1 }
         response = await Model
             .paginate(
                 generateQuery(request),
-                paginationParams(request, null, sortParams),
+                paginationParams(request, populateParams, sortBy),
                 reply
             )
 
@@ -216,12 +268,117 @@ const processFindAllByFilters = async (caseProps) => {
     }
 }
 
-const processFindById = async (caseProps) => {
+const processFindAllForCatalogue = async (caseProps) => {
+    let response
+
     try {
-        const { data: { id }, modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { populateParams, filters, sortParams, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const sortBy = sortParams ?? { createdAt: -1 }
+        response = await Model
+            .find(filters)
+            .sort(sortBy)
+            .populate(populateParams)
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindAllUsers = async (caseProps) => {
+    let response
+
+    try {
+        // const { no props } = caseProps
+        const tenantsSchema = getTenantsSchema()
+        const TenantModel = getModelByTenant(null, defaultTenantsModelName, tenantsSchema)
+        const tenants = await TenantModel.find({})
+        const users = []
+        for (let index = 0; index < tenants.length; index++) {
+            const tenantId = tenants[index].cuit
+            const usersSchema = getUsersSchema()
+            const UserModel = getModelByTenant(tenantId, defaultUsersModelName, usersSchema)
+            const tenantUsers = await UserModel.find({})
+            users.push(tenantUsers)
+        }
+        response = reply(null, users)
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindById = async (caseProps) => {
+    let response
+    
+    try {
+        const { data: { id, populateParams, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
             .findById(id)
+            .populate(populateParams)
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindLastIndex = async (caseProps) => {
+    let response
+    
+    try {
+        const { data: { tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        response = await Model
+            .findOne()
+            .sort('-indice')
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindLastVoucherNumber = async (caseProps) => {
+    let response
+    
+    try {
+        const { data: { code, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        response = await Model
+            .findOne({ documentoCodigo: code })
+            .sort('-indice')
             .then(
                 (replyData) => reply(null, replyData),
                 (error) => reply(error)
@@ -240,12 +397,43 @@ const processFindNewer = async (caseProps) => {
     let response
 
     try {
-        const { modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
             .find({})
-            .sort({ createdAt: -1 })
+            .sort(sortParams ?? { createdAt: -1 })
             .limit(1)
+            .populate(populateParams)
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindNewerSale = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const fiscalBillCodes = ['001', '006', '011', '051', '081', '082', '083', '111', '118']
+        const codesToQuery = fiscalBillCodes.map(code => { return { documentoCodigo: code } })
+        const query = { $or: codesToQuery }
+        response = await Model
+            .find(query)
+            .sort(sortParams ?? { createdAt: -1 })
+            .limit(1)
+            .populate(populateParams)
             .then(
                 (replyData) => reply(null, replyData),
                 (error) => reply(error)
@@ -264,12 +452,43 @@ const processFindOldest = async (caseProps) => {
     let response
 
     try {
-        const { modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
             .find({})
-            .sort({ createdAt: 1 })
+            .sort(sortParams ?? { createdAt: 1 })
             .limit(1)
+            .populate(populateParams)
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
+            )
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processFindOldestSale = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const fiscalBillCodes = ['001', '006', '011', '051', '081', '082', '083', '111', '118']
+        const codesToQuery = fiscalBillCodes.map(code => { return { documentoCodigo: code } })
+        const query = { $or: codesToQuery }
+        response = await Model
+            .find(query)
+            .sort(sortParams ?? { createdAt: 1 })
+            .limit(1)
+            .populate(populateParams)
             .then(
                 (replyData) => reply(null, replyData),
                 (error) => reply(error)
@@ -288,13 +507,70 @@ const processFindPaginated = async (caseProps) => {
     let response
 
     try {
-        const { data: { request, sortParams }, modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { populateParams, request, sortParams, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const sortBy = sortParams ?? { ceratedAt: -1 }
         response = await Model
             .paginate(
                 generateQuery(request),
-                paginationParams(request, null, sortParams),
+                paginationParams(request, populateParams, sortBy),
                 reply
+            )
+
+    } catch (error) {
+        console.error(error)
+        response = reply(error)
+
+    } finally {
+        return response
+    }
+}
+
+const processModifyStock = async (caseProps) => {
+    let response
+
+    try {
+        const { data: { modificationData, tenantId }, modelName } = caseProps
+        const item = modificationData.product
+        const isIncrement = modificationData.isIncrement
+        const quantity = modificationData.quantity
+        const fractionedQuantity = modificationData.fractionedQuantity
+
+        if (quantity) {
+            item.cantidadStock =
+                isIncrement
+                    ? item.cantidadStock + quantity
+                    : item.cantidadStock - quantity
+        } else {
+            item.cantidadFraccionadaStock =
+                isIncrement
+                    ? item.cantidadFraccionadaStock + fractionedQuantity
+                    : item.cantidadFraccionadaStock - fractionedQuantity
+
+            if (item.cantidadFraccionadaStock === 0) {
+                item.cantidadStock -= 1
+                item.cantidadFraccionadaStock = item.unidadMedida.fraccionamiento
+            }
+
+            if (item.cantidadFraccionadaStock < 0) {
+                item.cantidadStock -= 1
+                item.cantidadFraccionadaStock = item.unidadMedida.fraccionamiento + item.cantidadFraccionadaStock
+            }
+
+            if (item.cantidadFraccionadaStock > item.unidadMedida.fraccionamiento) {
+                item.cantidadStock += 1
+                item.cantidadFraccionadaStock = item.cantidadFraccionadaStock - item.unidadMedida.fraccionamiento
+            }
+        }
+
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        response = await Model
+            .findOneAndUpdate({ _id: item._id }, item, { new: true })
+            .then(
+                (replyData) => reply(null, replyData),
+                (error) => reply(error)
             )
 
     } catch (error) {
@@ -310,8 +586,9 @@ const processRemove = async (caseProps) => {
     let response
 
     try {
-        const { data: { ids }, modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { ids, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         const idsToRemove = Array.isArray(ids) ? ids : [ids]
         response = await Model
             .deleteMany({ _id: { $in: idsToRemove } })
@@ -333,8 +610,9 @@ const processRemoveProps = async (caseProps) => {
     let response
 
     try {
-        const { data: { props }, modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { props, tenantId }, modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         const propsToDelete = Array.isArray(props) ? props : [props]
         const propertiesToUnset = {}
         for (let index = 0; index < propsToDelete.length; index++) {
@@ -361,8 +639,10 @@ const processSave = async (caseProps) => {
     let response
 
     try {
-        const { data: { records } , modelName } = caseProps
-        const Model = getModel(modelName)
+        const { data: { records, tenantId } , modelName } = caseProps
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        
         const recordsToSave = Array.isArray(records) ? records : [records]
         response = await Model
             .insertMany(recordsToSave)

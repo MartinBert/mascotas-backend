@@ -1,123 +1,124 @@
 'use strict'
 const express = require('express')
-const Model = require('../models/dailyBusinessStatistic')
 const router = express.Router()
-const {
-    generateQuery,
-    paginationParams
-} = require('../helpers/controllersHelper')
+const helpers = require('../helpers')
 
-const errorResponse = (error) => {
-    return {
-        code: 500,
-        message: 'Error',
-        printStackTrace: error
+const { processRequest, services } = helpers.controllersHelper
+
+
+const modelName = 'dailyBusinessStatistics'
+const populateParams = []
+
+router.delete('/records/remove', async (request, response) => {
+    const data = {
+        ids: request.body,
+        tenantId: request.headers.tenantId
     }
-}
+    const props = { data, modelName, service: services.remove }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
 
-const successResponse = {
-    code: 200,
-    message: 'OK'
-}
-
-const successWithItems = (items) => {
-    return {
-        code: 200,
-        message: 'OK',
-        data: items
+router.get('/records/countRecords', async (request, response) => {
+    const data = {
+        tenantId: request.headers.tenantId
     }
-}
-
-
-// Delete all daily business statistics
-router.delete('/', (request, response) => {
-    Model.deleteMany({}, (error) => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(successResponse)
-    })
+    const props = { data, modelName, service: services.countRecords }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Delete business statistics
-router.delete('/:id', (request, response) => {
-    Model.deleteOne({ _id: request.params.id }, (error) => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(successResponse)
-    })
+router.get('/records/findAll', async (request, response) => {
+    const data = {
+        populateParams,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findAll }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Get business statistics
-router.get('/', (request, response) => {
-    const sortParams = { dateOrder: -1 }
-    Model
-        .paginate(
-            generateQuery(request),
-            paginationParams(request, null, sortParams),
-            (error, items) => {
-                if (error) return response.status(500).json(errorResponse(error))
-                return response.status(200).json(items)
-            }
-        )
+router.get('/records/findAllByFilters', async (request, response) => {
+    const data = {
+        populateParams,
+        request,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findAllByFilters }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Get business statistics by id
-router.get('/:id', (request, response) => {
-    Model.findById(request.params.id).exec((error, item) => {
-        if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(item))
-    })
+router.get('/records/findById', async (request, response) => {
+    const data = {
+        id: request.params.id,
+        populateParams,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findById }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Get newer business statistics
-router.get('/recordsInfo/newer', (request, response) => {
-    Model
-        .find({})
-        .sort({ 'date': -1 })
-        .limit(1)
-        .exec((error, item) => {
-            if (error) return response.status(500).json(errorResponse(error))
-            return response.status(200).json(item)
-        })
+router.get('/records/findNewer', async (request, response) => {
+    const data = {
+        populateParams,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findNewer }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Get oldest business statistics
-router.get('/recordsInfo/oldest', (request, response) => {
-    Model
-        .find({})
-        .sort({ 'date': 1 })
-        .limit(1)
-        .exec((error, item) => {
-            if (error) return response.status(500).json(errorResponse(error))
-            return response.status(200).json(item)
-        })
+router.get('/records/findOldest', async (request, response) => {
+    const data = {
+        populateParams,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findOldest }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Save one single business statistic
-router.post('/', (request, response) => {
-    let item = new Model(request.body)
-    item.save(error => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(successResponse)
-    })
+router.get('/records/findPaginated', async (request, response) => {
+    const data = {
+        populateParams,
+        request,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findPaginated }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Save more than one business statistics
-router.post('/statistics/save_all', (request, response) => {
-    Model.insertMany(request.body, (error) => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(successResponse)
-    })
+router.post('/records/save', async (request, response) => {
+    const data = {
+        records: request.body,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.save }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Update business statistics
-router.put('/:id', (request, response) => {
-    let item = new Model(request.body)
-    Model.findByIdAndUpdate(
-        request.body._id,
-        request.body,
-        { new: true }, (error) => {
-            if (error) return response.status(500).json(errorResponse(error))
-            return response.status(200).json(successWithItems(item))
-        })
+router.put('/records/edit', async (request, response) => {
+    const data = {
+        records: request.body,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.remove }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
+
+router.put('/records/removeProps', async (request, response) => {
+    const data = {
+        props: request.body,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.removeProps }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
 module.exports = router

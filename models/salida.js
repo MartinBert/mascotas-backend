@@ -1,10 +1,9 @@
 'use strict'
-
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
-const schema = new Schema({
+
+const outputsSchema = new mongoose.Schema({
     cantidad: {
         type: Number,
         required: true
@@ -37,6 +36,7 @@ const schema = new Schema({
     }
 }, { timestamps: true })
 
-schema.plugin(mongoosePaginate)
+outputsSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('salida', schema)
+
+module.exports = outputsSchema

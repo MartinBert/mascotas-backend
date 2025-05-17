@@ -1,11 +1,9 @@
 'use strict'
-
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 
-const schema = new Schema({
+const currentAccountsSchema = new mongoose.Schema({
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'usuario',
@@ -36,6 +34,7 @@ const schema = new Schema({
     }
 })
 
-schema.plugin(mongoosePaginate)
+currentAccountsSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('cuentacorriente', schema)
+
+module.exports = currentAccountsSchema

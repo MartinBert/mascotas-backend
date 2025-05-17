@@ -6,7 +6,7 @@ const helpers = require('../helpers')
 const { processRequest, services } = helpers.controllersHelper
 
 
-const modelName = 'benefits'
+const modelName = 'tenants'
 const populateParams = []
 
 router.delete('/records/remove', async (request, response) => {
@@ -45,6 +45,12 @@ router.get('/records/findAllByFilters', async (request, response) => {
         tenantId: request.headers.tenantId
     }
     const props = { data, modelName, service: services.findAllByFilters }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
+
+router.get('/records/findAllUsers', async (request, response) => {
+    const props = { service: services.findAllByFilters }
     const processResult = await processRequest(props)
     response.json(processResult)
 })

@@ -1,8 +1,9 @@
+'use strict'
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
-const schema = new Schema({
+
+const salesSchema = new mongoose.Schema({
     associatedVouchers: [{
         type: Object,
         required: false
@@ -238,6 +239,7 @@ const schema = new Schema({
     }
 }, { timestamps: true })
 
-schema.plugin(mongoosePaginate)
+salesSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('venta', schema)
+
+module.exports = salesSchema

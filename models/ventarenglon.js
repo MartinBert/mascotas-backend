@@ -1,8 +1,9 @@
+'use strict'
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
-const schema = new Schema({
+
+const saleLinesSchema = new mongoose.Schema({
     cantidadAgregadaPorDescuento_enKg: {
         type: Number,
         required: false
@@ -102,6 +103,7 @@ const schema = new Schema({
     },
 }, { timestamps: true })
 
-schema.plugin(mongoosePaginate)
+saleLinesSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('ventarenglon', schema)
+
+module.exports = saleLinesSchema

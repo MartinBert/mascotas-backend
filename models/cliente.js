@@ -1,10 +1,9 @@
 'use strict'
-
 const mongoose = require('mongoose')
-const Schema   = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
-const schema = new Schema({
+
+const clientSchema = new mongoose.Schema({
     ciudad: {
         type: String,
         required: true
@@ -51,6 +50,7 @@ const schema = new Schema({
     }
 }, { timestamps: true })
 
-schema.plugin(mongoosePaginate)
+clientSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('cliente', schema)
+
+module.exports = clientSchema

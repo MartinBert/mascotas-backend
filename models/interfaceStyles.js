@@ -1,9 +1,8 @@
 'use strict'
-
 const mongoose = require('mongoose')
-const Schema   = mongoose.Schema
 
-const schema = new Schema({
+
+const interfaceStylesSchema = new mongoose.Schema({
     darknessBackgroundPrimaryColor: {
         type: String,
         required: true
@@ -47,4 +46,4 @@ const schema = new Schema({
 }, { timestamps: true })
 
 
-module.exports = mongoose.model('interfaceStyles', schema)
+module.exports = interfaceStylesSchema

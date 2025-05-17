@@ -3,30 +3,22 @@ const mongoose = require('mongoose')
 const mongoosePaginate = require('mongoose-paginate-v2')
 
 
-const filesSchema = new mongoose.Schema({
-    url: {
+const tenantsSchema = new mongoose.Schema({
+    cuit: {
         type: String,
         required: true
     },
-    mimetype: {
+    email: {
         type: String,
         required: true
     },
-    filename: {
+    name: {
         type: String,
         required: true
     },
-    originalname: {
-        type: String,
-        required: false
-    },
-    size: {
-        type: Number,
-        required: true
-    }
 }, { timestamps: true })
 
-filesSchema.plugin(mongoosePaginate)
+tenantsSchema.plugin(mongoosePaginate)
 
 
-module.exports = filesSchema
+module.exports = tenantsSchema

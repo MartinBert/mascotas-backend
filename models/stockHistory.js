@@ -1,10 +1,9 @@
 'use strict'
-
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
 const mongoosePaginate = require('mongoose-paginate-v2')
 
-const schema = new Schema({
+
+const stockHistoriesSchema = new mongoose.Schema({
     date: {
         type: Date,
         required: true
@@ -32,6 +31,7 @@ const schema = new Schema({
     }
 }, { timestamps: true })
 
-schema.plugin(mongoosePaginate)
+stockHistoriesSchema.plugin(mongoosePaginate)
 
-module.exports = mongoose.model('stockHistory', schema)
+
+module.exports = stockHistoriesSchema

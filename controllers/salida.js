@@ -1,153 +1,126 @@
 'use strict'
 const express = require('express')
-const Model = require('../models/salida')
 const router = express.Router()
-const {
-    generateQuery,
-    paginationParams
-} = require('../helpers/controllersHelper')
+const helpers = require('../helpers')
 
-const errorResponse = (error) => {
-    return {
-        code: 500,
-        message: 'Error',
-        printStackTrace: error
+const { processRequest, services } = helpers.controllersHelper
+
+
+const modelName = 'outputs'
+const populateParams = ['usuario']
+
+router.delete('/records/remove', async (request, response) => {
+    const data = {
+        ids: request.body,
+        tenantId: request.headers.tenantId
     }
-}
+    const props = { data, modelName, service: services.remove }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
 
-const successResponse = {
-    code: 200,
-    message: 'OK'
-}
-
-const successWithItems = (items) => {
-    return {
-        code: 200,
-        message: 'OK',
-        data: items
+router.get('/records/countRecords', async (request, response) => {
+    const data = {
+        tenantId: request.headers.tenantId
     }
-}
-
-// Delete output
-router.delete('/:id', (request, response) => {
-    Model.deleteOne({ _id: request.params.id }, (error) => {
-        if (error) {
-            return response.status(500).send(errorResponse(error))
-        }
-        return response.status(200).send(successResponse)
-    })
+    const props = { data, modelName, service: services.countRecords }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Get outputs list
-router.get('/', (request, response) => {
-    const populateParams = ['usuario']
-    const sortParams = {fecha: -1}
-    Model
-        .paginate(
-            generateQuery(request),
-            paginationParams(request, populateParams, sortParams),
-            (error, items) => {
-                if (error) return response.status(500).json(errorResponse(error))
-                return response.status(200).json(items)
-            }
-        )
-})
-
-// Get output by id
-router.get('/:id', (request, response) => {
-    Model.findById(request.params.id).exec((error, item) => {
-        if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(item))
-    })
-})
-
-//Get outputs list id
-router.get('/multiple/idList', (request, response) => {
-    const { ids } = request.query
-    const query = { _id: { $in: JSON.parse(ids) } }
-    Model.find(query, (error, items) => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(items)
-    })
-})
-
-// Get newer output
-router.get('/recordsInfo/newer', (request, response) => {
-    Model
-        .find({})
-        .sort({ 'fecha': -1 })
-        .limit(1)
-        .exec((error, item) => {
-            if (error) return response.status(500).json(errorResponse(error))
-            return response.status(200).json(item)
-        })
-})
-
-// Get oldest output
-router.get('/recordsInfo/oldest', (request, response) => {
-    Model
-        .find({})
-        .sort({ 'fecha': 1 })
-        .limit(1)
-        .exec((error, item) => {
-            if (error) return response.status(500).json(errorResponse(error))
-            return response.status(200).json(item)
-        })
-})
-
-// Get records quantity of outputs
-router.get('/recordsInfo/quantity', (request, response) => {
-    Model.estimatedDocumentCount((error, numOfDocs) => {
-        if (error) return response.status(500).json(errorResponse(error))
-        return response.status(200).json(numOfDocs)
-    })
-})
-
-// Save new output
-router.post('/', (request, response) => {
-    let item = new Model(request.body)
-    item.save((error, item) => {
-        if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(item))
-    })
-})
-
-// Edit one single output
-router.put('/', (request, response) => {
-    let item = new Model(request.body)
-    Model.findOneAndUpdate({ _id: item._id }, item, { new: true }, (error, item) => {
-        if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(item))
-    })
-})
-
-// Delete specific properties from all outputs
-router.put('/outputs/delete_props_from_all', (request, response) => {
-    const propertiesToUnset = {}
-    for (let index = 0; index < request.body.length; index++) {
-        const prop = request.body[index]
-        propertiesToUnset[prop] = 1
+router.get('/records/findAll', async (request, response) => {
+    const data = {
+        populateParams,
+        tenantId: request.headers.tenantId
     }
-    Model.updateMany({}, { $unset: propertiesToUnset }, {}, (error, result) => {
-        if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(result))
-    })
+    const props = { data, modelName, service: services.findAll }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
-// Update more than one output
-router.put('/outputs/edit_all', (request, response) => {
-    const outputs = request.body
-    const bulkOptions = outputs.map(output => ({
-        updateOne: {
-            filter: { _id: output._id },
-            update: { $set: output },
-            upsert: true
-        }
-    }))
-    Model.bulkWrite(bulkOptions, (error, result) => {
-        if (error) return response.status(500).send(errorResponse(error))
-        return response.status(200).send(successWithItems(result))
-    })
+router.get('/records/findAllByFilters', async (request, response) => {
+    const data = {
+        populateParams,
+        request,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findAllByFilters }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
+
+router.get('/records/findById', async (request, response) => {
+    const data = {
+        id: request.params.id,
+        populateParams,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findById }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
+
+router.get('/records/findNewer', async (request, response) => {
+    const data = {
+        populateParams,
+        sortParams: { fecha: -1 },
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findNewer }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
+
+router.get('/records/findOldest', async (request, response) => {
+    const data = {
+        populateParams,
+        sortParams: { fecha: 1 },
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findOldest }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
+
+router.get('/records/findPaginated', async (request, response) => {
+    const data = {
+        populateParams,
+        request,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.findPaginated }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
+
+router.post('/records/save', async (request, response) => {
+    const data = {
+        records: request.body,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.save }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
+
+router.put('/records/edit', async (request, response) => {
+    const data = {
+        records: request.body,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.remove }
+    const processResult = await processRequest(props)
+    response.json(processResult)
+})
+
+router.put('/records/removeProps', async (request, response) => {
+    const data = {
+        props: request.body,
+        tenantId: request.headers.tenantId
+    }
+    const props = { data, modelName, service: services.removeProps }
+    const processResult = await processRequest(props)
+    response.json(processResult)
 })
 
 module.exports = router
