@@ -11,7 +11,6 @@ const DocumentModel = require('../models/documento')
 const EntryModel = require('../models/entrada')
 const FileModel = require('../models/archivo')
 const FiscalConditionModel = require('../models/condicionfiscal')
-const FiscalNoteModel = require('../models/fiscalNote')
 const OutputModel = require('../models/salida')
 const PaymentMethodModel = require('../models/mediopago')
 const ProductModel = require('../models/producto')
@@ -34,7 +33,6 @@ const models = [
     EntryModel,
     FileModel,
     FiscalConditionModel,
-    FiscalNoteModel,
     OutputModel,
     PaymentMethodModel,
     ProductModel,

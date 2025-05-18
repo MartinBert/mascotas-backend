@@ -25,12 +25,12 @@ const successResponse = (file) => {
 
 // Delete image
 router.delete('/:id', (request, response) => {
-    Model.findOne({_id: request.params.id}, (error, item) => {
+    Model.findOne({_id: request.query.id}, (error, item) => {
         if(error) return response.status(500).send(errorResponse(error))
         if(!item) return response.status(404).send(errorResponse('Item does not exit'))
         fs.unlink('public/uploads/' + item.filename, (err) => {
             if(err) return response.status(404).send(errorResponse('File is not in directory'))
-            Model.deleteOne({_id: request.params.id}, {}, (error, deletedItem) => {
+            Model.deleteOne({_id: request.query.id}, {}, (error, deletedItem) => {
                 if(error) return response.status(500).send(errorResponse(error))
                 if(!deletedItem) return response.status(404).send(errorResponse('The item could not be removed'))
                 return response.status(200).send(successResponse(deletedItem))
@@ -41,7 +41,7 @@ router.delete('/:id', (request, response) => {
 
 // Get image url
 router.get('/:id', (request, response) => {
-    Model.findOne({ _id: request.params.id }, (error, item) => {
+    Model.findOne({ _id: request.query.id }, (error, item) => {
         if (error) return errorResponse(error)
         return response.status(200).send(item.url)
     })

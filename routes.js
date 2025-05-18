@@ -13,7 +13,6 @@ module.exports = app => {
     router.use('/documents', auth.verifyAuthentication, require('./controllers/documento'))
     router.use('/business', auth.verifyAuthentication, require('./controllers/empresa'))
     router.use('/entries', auth.verifyAuthentication, require('./controllers/entrada'))
-    router.use('/fiscal_notes', auth.verifyAuthentication, require('./controllers/fiscalNote'))
     router.use('/generics', auth.verifyAuthentication, require('./controllers/genericos'))
     router.use('/interface_styles', auth.verifyAuthentication, require('./controllers/interfaceStyles'))
     router.use('/brands', auth.verifyAuthentication, require('./controllers/marca'))

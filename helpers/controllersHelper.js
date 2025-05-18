@@ -206,7 +206,7 @@ const processEdit = async (caseProps) => {
             )
 
     } catch (error) {
-        console.log(error)
+        console.error(error)
         response = reply(error)
 
     } finally {
@@ -401,7 +401,7 @@ const processFindNewer = async (caseProps) => {
             .limit(1)
             .populate(populateParams)
             .then(
-                (replyData) => reply(null, replyData),
+                ([replyData]) => reply(null, replyData),
                 (error) => reply(error)
             )
 
@@ -430,7 +430,7 @@ const processFindNewerSale = async (caseProps) => {
             .limit(1)
             .populate(populateParams)
             .then(
-                (replyData) => reply(null, replyData),
+                ([replyData]) => reply(null, replyData),
                 (error) => reply(error)
             )
 
@@ -456,7 +456,7 @@ const processFindOldest = async (caseProps) => {
             .limit(1)
             .populate(populateParams)
             .then(
-                (replyData) => reply(null, replyData),
+                ([replyData]) => reply(null, replyData),
                 (error) => reply(error)
             )
 
@@ -485,7 +485,7 @@ const processFindOldestSale = async (caseProps) => {
             .limit(1)
             .populate(populateParams)
             .then(
-                (replyData) => reply(null, replyData),
+                ([replyData]) => reply(null, replyData),
                 (error) => reply(error)
             )
 

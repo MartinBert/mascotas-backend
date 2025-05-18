@@ -71,10 +71,15 @@ const authController = {
     },
 
     verifyAuthentication(req, res, next) {
+        /* Axios converts headers to lowercase:
+                Authorization: authorization
+                newlyUser: newlyuser
+                tenantId: tenantid
+        */
         try {
-            const isNewlyUser = req.body.newlyUser ?? false
+            const isNewlyUser = req.headers.newlyuser ?? false
             if (isNewlyUser) {
-                const data = { records: req.body, tenantId: req.params.tenantId }
+                const data = { records: req.body, tenantId: req.headers.tenantid }
                 const props = { data, modelName: userModelName, service: services.save }
                 processRequest(props).then(
                     (result) => { return res.status(200).json(result) },
@@ -88,11 +93,7 @@ const authController = {
                 })
                 jwt.verify(token, public_key, { algorithms: ['RS256'] }, (err, loggedUser) => {
                     if (err) return res.status(401).send(errorResponseAuthorization(401, err))
-                    const tenantId = (
-                        req.headers.tenantId
-                        ?? req.headers.tenantid // Axios converts header to lowercase
-                        ?? null
-                    )
+                    const tenantId = req.headers.tenantid ?? null
                     const UserModel = getModelByTenant(tenantId, userModelName, userSchema)
                     const { email, password } = loggedUser
                     UserModel.findOne({ email }).exec((error, user) => {
