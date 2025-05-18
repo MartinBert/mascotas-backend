@@ -7,7 +7,6 @@ const defaultTenantsModelName = 'tenants'
 const defaultUsersModelName = 'users'
 const services = {
     countRecords: 'countRecords',
-    deletePropsFromAllLines: 'deletePropsFromAllLines',
     edit: 'edit',
     findAll: 'findAll',
     findAllByFilters: 'findAllByFilters',
@@ -80,7 +79,6 @@ const generateQuery = (request) => {
             else query[key] = value
         }
     }
-    console.log(query)
     return query
 }
 
@@ -103,9 +101,6 @@ const processRequest = async (props) => {
     switch (service) {
         case services.countRecords:
             response = await processCountRecords(caseProps)
-            break
-        case services.deletePropsFromAllLines:
-            response = await processDeletePropsFromAllLines(caseProps)
             break
         case services.edit:
             response = await processEdit(caseProps)

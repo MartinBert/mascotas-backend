@@ -6,8 +6,8 @@ const helpers = require('../helpers')
 const { processRequest, services } = helpers.controllersHelper
 
 
-const modelName = 'sales'
-const populateParams = [ 'documento', 'renglones', 'usuario' ]
+const modelName = 'salesLines'
+const populateParams = []
 
 router.delete('/records/remove', async (request, response) => {
     const data = {
@@ -60,39 +60,8 @@ router.get('/records/findById', async (request, response) => {
     response.json(processResult)
 })
 
-router.get('/records/findLastIndex', async (request, response) => {
-    const data = {
-        tenantId: request.headers.tenantId
-    }
-    const props = { data, modelName, service: services.findById }
-    const processResult = await processRequest(props)
-    response.json(processResult)
-})
-
-router.get('/records/findLastVoucherNumber', async (request, response) => {
-    const data = {
-        code: request.params.code,
-        tenantId: request.headers.tenantId
-    }
-    const props = { data, modelName, service: services.findById }
-    const processResult = await processRequest(props)
-    response.json(processResult)
-})
-
 router.get('/records/findNewer', async (request, response) => {
     const data = {
-        populateParams,
-        sortParams: { fechaEmision: -1 },
-        tenantId: request.headers.tenantId
-    }
-    const props = { data, modelName, service: services.findNewer }
-    const processResult = await processRequest(props)
-    response.json(processResult)
-})
-
-router.get('/records/findNewerSale', async (request, response) => {
-    const data = {
-        sortParams: { fechaEmision: -1 },
         populateParams,
         tenantId: request.headers.tenantId
     }
@@ -104,21 +73,9 @@ router.get('/records/findNewerSale', async (request, response) => {
 router.get('/records/findOldest', async (request, response) => {
     const data = {
         populateParams,
-        sortParams: { fechaEmision: 1 },
         tenantId: request.headers.tenantId
     }
     const props = { data, modelName, service: services.findOldest }
-    const processResult = await processRequest(props)
-    response.json(processResult)
-})
-
-router.get('/records/findOldestSale', async (request, response) => {
-    const data = {
-        sortParams: { fechaEmision: 1 },
-        populateParams,
-        tenantId: request.headers.tenantId
-    }
-    const props = { data, modelName, service: services.findNewer }
     const processResult = await processRequest(props)
     response.json(processResult)
 })

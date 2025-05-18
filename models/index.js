@@ -14,7 +14,7 @@ const outputsSchema = require('./salida')
 const paymentMethodSchema = require('./mediopago')
 const productSchema = require('./producto')
 const tenantsSchema = require('./tenant')
-const saleLinesSchema = require('./ventarenglon')
+const salesLinesSchema = require('./ventarenglon')
 const salePointsSchema = require('./puntoventa')
 const salesAreasSchema = require('./zonadeventa')
 const salesSchema = require('./venta')
@@ -39,10 +39,10 @@ module.exports = [
     { name: 'outputs', schema: outputsSchema },
     { name: 'paymentMethods', schema: paymentMethodSchema },
     { name: 'products', schema: productSchema },
-    { name: 'saleLines', schema: saleLinesSchema },
     { name: 'salePoints', schema: salePointsSchema },
     { name: 'sales', schema: salesAreasSchema },
     { name: 'salesAreas', schema: salesSchema },
+    { name: 'salesLines', schema: salesLinesSchema },
     { name: 'stockHistories', schema: stockHistoriesSchema },
     { name: 'tenants', schema: tenantsSchema },
     { name: 'types', schema: typesSchema },
