@@ -6,7 +6,7 @@ const helpers = require('../helpers')
 const { processRequest, services } = helpers.controllersHelper
 
 
-const modelName = 'documents'
+const modelName = 'documento'
 const populateParams = []
 
 router.delete('/records/remove', async (request, response) => {

@@ -30,6 +30,7 @@ const benefitsSchema = new mongoose.Schema({
             name: String,
             quantity: Number
         },
+        ref: 'producto',
         required: true
     }],
     purchaseAmountForActivation: {

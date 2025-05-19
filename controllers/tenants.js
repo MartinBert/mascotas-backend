@@ -2,11 +2,12 @@
 const express = require('express')
 const router = express.Router()
 const helpers = require('../helpers')
+const models = require('../models')
 
 const { processRequest, services } = helpers.controllersHelper
 
 
-const modelName = 'tenants'
+const modelName = 'tenant'
 const populateParams = []
 
 router.delete('/records/remove', async (request, response) => {
@@ -50,7 +51,10 @@ router.get('/records/findAllByFilters', async (request, response) => {
 })
 
 router.get('/records/findAllUsers', async (request, response) => {
-    const props = { service: services.findAllByFilters }
+    const data = {
+        refModelsNames: ['empresa', 'puntoventa']
+    }
+    const props = { data, service: services.findAllByFilters }
     const processResult = await processRequest(props)
     response.json(processResult)
 })

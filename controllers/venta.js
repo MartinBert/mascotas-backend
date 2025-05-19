@@ -6,8 +6,9 @@ const helpers = require('../helpers')
 const { processRequest, services } = helpers.controllersHelper
 
 
-const modelName = 'sales'
-const populateParams = [ 'documento', 'renglones', 'usuario' ]
+const modelName = 'venta'
+const populateParams = ['cliente', 'documento', 'empresa', 'mediosPago', 'puntoVenta', 'renglones', 'usuario' ]
+const refModelsNames = ['cliente', 'documento', 'empresa', 'mediopago', 'puntoventa', 'ventarenglon', 'usuario' ]
 
 router.delete('/records/remove', async (request, response) => {
     const data = {
@@ -31,6 +32,7 @@ router.get('/records/countRecords', async (request, response) => {
 router.get('/records/findAll', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findAll }
@@ -41,6 +43,7 @@ router.get('/records/findAll', async (request, response) => {
 router.get('/records/findAllByFilters', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         request,
         tenantId: request.headers.tenantid
     }
@@ -53,6 +56,7 @@ router.get('/records/findById', async (request, response) => {
     const data = {
         id: request.query.id,
         populateParams,
+        refModelsNames,
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findById }
@@ -82,6 +86,7 @@ router.get('/records/findLastVoucherNumber', async (request, response) => {
 router.get('/records/findNewer', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         sortParams: { fechaEmision: -1 },
         tenantId: request.headers.tenantid
     }
@@ -92,8 +97,9 @@ router.get('/records/findNewer', async (request, response) => {
 
 router.get('/records/findNewerSale', async (request, response) => {
     const data = {
-        sortParams: { fechaEmision: -1 },
         populateParams,
+        refModelsNames,
+        sortParams: { fechaEmision: -1 },
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findNewer }
@@ -104,6 +110,7 @@ router.get('/records/findNewerSale', async (request, response) => {
 router.get('/records/findOldest', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         sortParams: { fechaEmision: 1 },
         tenantId: request.headers.tenantid
     }
@@ -114,8 +121,9 @@ router.get('/records/findOldest', async (request, response) => {
 
 router.get('/records/findOldestSale', async (request, response) => {
     const data = {
-        sortParams: { fechaEmision: 1 },
         populateParams,
+        refModelsNames,
+        sortParams: { fechaEmision: 1 },
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findNewer }
@@ -126,6 +134,7 @@ router.get('/records/findOldestSale', async (request, response) => {
 router.get('/records/findPaginated', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         request,
         tenantId: request.headers.tenantid
     }

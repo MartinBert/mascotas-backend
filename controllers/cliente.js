@@ -3,11 +3,13 @@ const express = require('express')
 const router = express.Router()
 const helpers = require('../helpers')
 
+
 const { processRequest, services } = helpers.controllersHelper
 
 
-const modelName = 'clients'
-const populateParams = []
+const modelName = 'cliente'
+const populateParams = ['condicionFiscal']
+const refModelsNames = ['condicionfiscal']
 
 router.delete('/records/remove', async (request, response) => {
     const data = {
@@ -31,6 +33,7 @@ router.get('/records/countRecords', async (request, response) => {
 router.get('/records/findAll', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findAll }
@@ -41,6 +44,7 @@ router.get('/records/findAll', async (request, response) => {
 router.get('/records/findAllByFilters', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         request,
         tenantId: request.headers.tenantid
     }
@@ -53,6 +57,7 @@ router.get('/records/findById', async (request, response) => {
     const data = {
         id: request.query.id,
         populateParams,
+        refModelsNames,
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findById }
@@ -63,6 +68,7 @@ router.get('/records/findById', async (request, response) => {
 router.get('/records/findNewer', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findNewer }
@@ -73,6 +79,7 @@ router.get('/records/findNewer', async (request, response) => {
 router.get('/records/findOldest', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findOldest }
@@ -83,6 +90,7 @@ router.get('/records/findOldest', async (request, response) => {
 router.get('/records/findPaginated', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         request,
         tenantId: request.headers.tenantid
     }

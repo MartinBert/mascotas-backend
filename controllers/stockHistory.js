@@ -6,8 +6,9 @@ const helpers = require('../helpers')
 const { processRequest, services } = helpers.controllersHelper
 
 
-const modelName = 'stockHistories'
-const populateParams = []
+const modelName = 'stockHistory'
+const populateParams = ['product']
+const refModelsNames = ['producto']
 
 router.delete('/records/remove', async (request, response) => {
     const data = {
@@ -31,6 +32,7 @@ router.get('/records/countRecords', async (request, response) => {
 router.get('/records/findAll', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findAll }
@@ -41,6 +43,7 @@ router.get('/records/findAll', async (request, response) => {
 router.get('/records/findAllByFilters', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         request,
         tenantId: request.headers.tenantid
     }
@@ -53,6 +56,7 @@ router.get('/records/findById', async (request, response) => {
     const data = {
         id: request.query.id,
         populateParams,
+        refModelsNames,
         tenantId: request.headers.tenantid
     }
     const props = { data, modelName, service: services.findById }
@@ -63,6 +67,7 @@ router.get('/records/findById', async (request, response) => {
 router.get('/records/findNewer', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         sortParams: { date: -1 },
         tenantId: request.headers.tenantid
     }
@@ -74,6 +79,7 @@ router.get('/records/findNewer', async (request, response) => {
 router.get('/records/findOldest', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         sortParams: { date: 1 },
         tenantId: request.headers.tenantid
     }
@@ -85,6 +91,7 @@ router.get('/records/findOldest', async (request, response) => {
 router.get('/records/findPaginated', async (request, response) => {
     const data = {
         populateParams,
+        refModelsNames,
         request,
         tenantId: request.headers.tenantid
     }

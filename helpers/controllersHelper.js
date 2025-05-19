@@ -3,8 +3,8 @@ const modelsData = require('../models')
 const { getModelByTenant } = require('../config')
 
 
-const defaultTenantsModelName = 'tenants'
-const defaultUsersModelName = 'users'
+const defaultTenantsModelName = 'tenant'
+const defaultUsersModelName = 'usuario'
 const services = {
     countRecords: 'countRecords',
     edit: 'edit',
@@ -26,19 +26,32 @@ const services = {
     save: 'save'
 }
 
+const getRefModels = (refModelsNames) => {
+    const refModels = []
+    if (refModelsNames && refModelsNames.length > 0) {
+        for (let index = 0; index < refModelsNames.length; index++) {
+            const refModelName = refModelsNames[index]
+            const refModelSchema = modelsData.find(model => model.name === refModelName).schema
+            const refModel = { refModelName, refModelSchema }
+            refModels.push(refModel)
+        }
+    }
+    return refModels
+}
+
 const getSchema = (modelName) => {
     const modelItem = modelsData.find(modelItem => modelItem.name === modelName)
     const schema = modelItem.schema
     return schema
 }
 
-const getTenantsSchema = (modelName) => {
+const getTenantsSchema = () => {
     const modelItem = modelsData.find(modelItem => modelItem.name === defaultTenantsModelName)
     const schema = modelItem.schema
     return schema
 }
 
-const getUsersSchema = (modelName) => {
+const getUsersSchema = () => {
     const modelItem = modelsData.find(modelItem => modelItem.name === defaultUsersModelName)
     const schema = modelItem.schema
     return schema
@@ -218,9 +231,10 @@ const processFindAll = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const { data: { populateParams, refModelsNames, sortParams, tenantId }, modelName } = caseProps
         const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const refModels = getRefModels(refModelsNames)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         response = await Model
             .find({})
             .sort(sortParams ?? { createdAt: -1 })
@@ -243,9 +257,10 @@ const processFindAllByFilters = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, request, sortParams, tenantId }, modelName } = caseProps
+        const { data: { populateParams, refModelsNames, request, sortParams, tenantId }, modelName } = caseProps
         const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const refModels = getRefModels(refModelsNames)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         const sortBy = sortParams ?? { createdAt: -1 }
         response = await Model
             .paginate(
@@ -267,9 +282,10 @@ const processFindAllForCatalogue = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, filters, sortParams, tenantId }, modelName } = caseProps
+        const { data: { populateParams, filters, refModelsNames, sortParams, tenantId }, modelName } = caseProps
         const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const refModels = getRefModels(refModelsNames)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         const sortBy = sortParams ?? { createdAt: -1 }
         response = await Model
             .find(filters)
@@ -293,7 +309,7 @@ const processFindAllUsers = async (caseProps) => {
     let response
 
     try {
-        // const { no props } = caseProps
+        const { data: { refModelsNames } } = caseProps
         const tenantsSchema = getTenantsSchema()
         const TenantModel = getModelByTenant(null, defaultTenantsModelName, tenantsSchema)
         const tenants = await TenantModel.find({})
@@ -301,7 +317,8 @@ const processFindAllUsers = async (caseProps) => {
         for (let index = 0; index < tenants.length; index++) {
             const tenantId = tenants[index].cuit
             const usersSchema = getUsersSchema()
-            const UserModel = getModelByTenant(tenantId, defaultUsersModelName, usersSchema)
+            const refModels = getRefModels(refModelsNames)
+            const UserModel = getModelByTenant(tenantId, defaultUsersModelName, usersSchema, refModels)
             const tenantUsers = await UserModel.find({})
             users.push(tenantUsers)
         }
@@ -320,9 +337,10 @@ const processFindById = async (caseProps) => {
     let response
     
     try {
-        const { data: { id, populateParams, tenantId }, modelName } = caseProps
+        const { data: { id, populateParams, refModelsNames, tenantId }, modelName } = caseProps
         const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const refModels = getRefModels(refModelsNames)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         response = await Model
             .findById(id)
             .populate(populateParams)
@@ -392,9 +410,10 @@ const processFindNewer = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const { data: { populateParams, refModelsNames, sortParams, tenantId }, modelName } = caseProps
         const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const refModels = getRefModels(refModelsNames)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         response = await Model
             .find({})
             .sort(sortParams ?? { createdAt: -1 })
@@ -420,7 +439,8 @@ const processFindNewerSale = async (caseProps) => {
     try {
         const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
         const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const refModels = getRefModels([ 'documento', 'renglones', 'usuario' ])
+        const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         const fiscalBillCodes = ['001', '006', '011', '051', '081', '082', '083', '111', '118']
         const codesToQuery = fiscalBillCodes.map(code => { return { documentoCodigo: code } })
         const query = { $or: codesToQuery }
@@ -447,9 +467,10 @@ const processFindOldest = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const { data: { populateParams, refModelsNames, sortParams, tenantId }, modelName } = caseProps
         const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const refModels = getRefModels(refModelsNames)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         response = await Model
             .find({})
             .sort(sortParams ?? { createdAt: 1 })
@@ -475,7 +496,8 @@ const processFindOldestSale = async (caseProps) => {
     try {
         const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
         const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const refModels = getRefModels([ 'documento', 'renglones', 'usuario' ])
+        const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         const fiscalBillCodes = ['001', '006', '011', '051', '081', '082', '083', '111', '118']
         const codesToQuery = fiscalBillCodes.map(code => { return { documentoCodigo: code } })
         const query = { $or: codesToQuery }
@@ -502,9 +524,10 @@ const processFindPaginated = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, request, sortParams, tenantId }, modelName } = caseProps
+        const { data: { populateParams, refModelsNames, request, sortParams, tenantId }, modelName } = caseProps
         const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
+        const refModels = getRefModels(refModelsNames)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         const sortBy = sortParams ?? { ceratedAt: -1 }
         response = await Model
             .paginate(

@@ -7,8 +7,8 @@ const helpers = require('../helpers')
 const { private_key, public_key } = keys
 const { processRequest, services } = helpers.controllersHelper
 
-const tenantModelName = 'tenants'
-const userModelName = 'users'
+const tenantModelName = 'tenant'
+const userModelName = 'usuario'
 
 const errorResponse = (code, error) => {
     return {
@@ -52,6 +52,8 @@ const authController = {
                 UserModel.findOne({ email }).exec((error, user) => {
                     if (error) {
                         res.status(500).send(errorResponse(500, error))
+                    } if (!user) {
+                        res.status(404).send(errorResponseAuthorization(404, 'User not found.'))
                     } else {
                         validateCredentials(user, password)
                             .then(token => {
@@ -98,6 +100,7 @@ const authController = {
                     const { email, password } = loggedUser
                     UserModel.findOne({ email }).exec((error, user) => {
                         if (error) return res.status(500).send(errorResponseAuthorization(500, error))
+                        if (!user) return res.status(404).send(errorResponseAuthorization(404, 'User not found.'))
                         if (user.password === password) {
                             next()
                         } else {

@@ -30,7 +30,7 @@ const connectToMongoDB = () => {
     return db
 }
 
-const getModelByTenant = (tenantId = null, modelName, modelSchema) => {
+const getModelByTenant = (tenantId = null, modelName, modelSchema, refModels = []) => {
     const tenantsDb = connectToMongoDB()
     if (!tenantsDb) {
         return console.log('error')
@@ -43,7 +43,19 @@ const getModelByTenant = (tenantId = null, modelName, modelSchema) => {
             activeDb = tenantsDb.useDb(dbName, { useCache: true })
             console.log(`DB switched to ${dbName}`)
         }
+
+        // Set model
         const dbModel = activeDb.model(modelName, modelSchema)
+
+        // Set ref models
+        if (refModels.length > 0) {
+            for (let index = 0; index < refModels.length; index++) {
+                const refModelName = refModels[index].refModelName
+                const refModelSchema = refModels[index].refModelSchema
+                activeDb.model(refModelName, refModelSchema)
+            }
+        }
+
         return dbModel
     }
 }
