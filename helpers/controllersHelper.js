@@ -201,8 +201,6 @@ const processEdit = async (caseProps) => {
 
     try {
         const { data: { records, tenantId }, modelName } = caseProps
-        const modelSchema = getSchema(modelName)
-        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         const recordsToEdit = Array.isArray(records) ? records : [records]
         const bulkOptions = recordsToEdit.map(record => ({
             updateOne: {
@@ -211,6 +209,8 @@ const processEdit = async (caseProps) => {
                 upsert: true
             }
         }))
+        const modelSchema = getSchema(modelName)
+        const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
             .bulkWrite(bulkOptions)
             .then(

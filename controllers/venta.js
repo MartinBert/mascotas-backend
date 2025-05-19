@@ -68,7 +68,7 @@ router.get('/records/findLastIndex', async (request, response) => {
     const data = {
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findById }
+    const props = { data, modelName, service: services.findLastIndex }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
@@ -78,7 +78,7 @@ router.get('/records/findLastVoucherNumber', async (request, response) => {
         code: request.query.code,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findById }
+    const props = { data, modelName, service: services.findLastVoucherNumber }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
@@ -102,7 +102,7 @@ router.get('/records/findNewerSale', async (request, response) => {
         sortParams: { fechaEmision: -1 },
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findNewer }
+    const props = { data, modelName, service: services.findNewerSale }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
@@ -126,7 +126,7 @@ router.get('/records/findOldestSale', async (request, response) => {
         sortParams: { fechaEmision: 1 },
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findNewer }
+    const props = { data, modelName, service: services.findOldestSale }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
@@ -158,7 +158,7 @@ router.put('/records/edit', async (request, response) => {
         records: request.body,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.remove }
+    const props = { data, modelName, service: services.edit }
     const processResult = await processRequest(props)
     response.json(processResult)
 })

@@ -115,7 +115,7 @@ router.put('/records/edit', async (request, response) => {
         records: request.body,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.remove }
+    const props = { data, modelName, service: services.edit }
     const processResult = await processRequest(props)
     response.json(processResult)
 })

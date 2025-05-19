@@ -8,7 +8,7 @@ const { processRequest, services } = helpers.controllersHelper
 
 const modelName = 'usuario'
 const populateParams = ['empresa', 'puntoVenta']
-const refModelsNames = ['usuario', 'puntoventa']
+const refModelsNames = ['empresa', 'puntoventa']
 
 router.delete('/records/remove', async (request, response) => {
     const data = {
@@ -113,7 +113,7 @@ router.put('/records/edit', async (request, response) => {
         records: request.body,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.remove }
+    const props = { data, modelName, service: services.edit }
     const processResult = await processRequest(props)
     response.json(processResult)
 })

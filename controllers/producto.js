@@ -125,7 +125,7 @@ router.put('/records/edit', async (request, response) => {
         records: request.body,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.remove }
+    const props = { data, modelName, service: services.edit }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
@@ -135,7 +135,7 @@ router.put('/records/modifyStock', async (request, response) => {
         modificationData: request.body,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.removeProps }
+    const props = { data, modelName, service: services.modifyStock }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
