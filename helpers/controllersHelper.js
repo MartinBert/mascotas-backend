@@ -61,7 +61,7 @@ const reply = (error, replyData = null) => {
     const response = {
         code: error ? 500 : 200,
         data: error ?? replyData,
-        message: error ? 'Error' : 'OK'
+        status: error ? 'Error' : 'OK'
     }
     return response
 }
@@ -177,7 +177,7 @@ const processCountRecords = async (caseProps) => {
     let response
 
     try {
-        const { data: { tenantId }, modelName } = caseProps
+        const { modelName, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
@@ -197,27 +197,63 @@ const processCountRecords = async (caseProps) => {
 }
 
 const processEdit = async (caseProps) => {
+    let bulkOptions = []
     let response
 
     try {
-        const { data: { records, tenantId }, modelName } = caseProps
-        const recordsToEdit = Array.isArray(records) ? records : [records]
-        const bulkOptions = recordsToEdit.map(record => ({
-            updateOne: {
-                filter: { _id: record._id },
-                update: { $set: record },
-                upsert: true
-            }
-        }))
+        const { childModelName, childProp, modelName, records, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const Model = getModelByTenant(tenantId, modelName, modelSchema)
-        response = await Model
-            .bulkWrite(bulkOptions)
-            .then(
-                (replyData) => reply(null, replyData),
-                (error) => reply(error)
-            )
-
+        const recordsToEdit = Array.isArray(records) ? records : [records]
+        if (!childModelName) {
+            bulkOptions = recordsToEdit.map(record => ({
+                updateOne: {
+                    filter: { _id: record._id },
+                    update: { $set: record },
+                    upsert: true
+                }
+            }))
+            response = await Model
+                .bulkWrite(bulkOptions)
+                .then(
+                    (replyData) => reply(null, replyData),
+                    (error) => reply(error)
+                )
+        } else {
+            const childModelSchema = getSchema(childModelName)
+            const ChildModel = getModelByTenant(tenantId, childModelName, childModelSchema)
+            const editResults = []
+            for (let index = 0; index < recordsToEdit.length; index++) {
+                const recordToEdit = recordsToEdit[index]
+                const childsToEdit = recordToEdit[childProp]
+                bulkOptions = childsToEdit.map(child => ({
+                    updateOne: {
+                        filter: { _id: child._id },
+                        update: { $set: child },
+                        upsert: true
+                    }
+                }))
+                let editResult = { status: 'FAIL' }
+                await ChildModel
+                    .bulkWrite(bulkOptions)
+                    .then(
+                        async (childRecords) => {
+                            recordToEdit[childProp] = childRecords
+                            await Model
+                                .updateOne(recordToEdit)
+                                .then(
+                                    (editResultData) => editResult = reply(null, editResultData),
+                                    (error) => editResult = reply(error)
+                                )
+                        },
+                        (error) => editResult = reply(error)
+                    )
+                editResults.push(editResult)
+            }
+            const saveResultsIncludesErrors = editResults.find(editResult => editResult.status !== 'OK')
+            response = reply(saveResultsIncludesErrors ? 500 : null, editResults)
+        }
+        
     } catch (error) {
         console.error(error)
         response = reply(error)
@@ -231,7 +267,7 @@ const processFindAll = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, refModelsNames, sortParams, tenantId }, modelName } = caseProps
+        const { modelName, populateParams, refModelsNames, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const refModels = getRefModels(refModelsNames)
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
@@ -257,7 +293,7 @@ const processFindAllByFilters = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, refModelsNames, request, sortParams, tenantId }, modelName } = caseProps
+        const { modelName, populateParams, refModelsNames, request, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const refModels = getRefModels(refModelsNames)
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
@@ -282,7 +318,7 @@ const processFindAllForCatalogue = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, filters, refModelsNames, sortParams, tenantId }, modelName } = caseProps
+        const { modelName, populateParams, filters, refModelsNames, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const refModels = getRefModels(refModelsNames)
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
@@ -309,7 +345,7 @@ const processFindAllUsers = async (caseProps) => {
     let response
 
     try {
-        const { data: { refModelsNames } } = caseProps
+        const { refModelsNames } = caseProps
         const tenantsSchema = getTenantsSchema()
         const TenantModel = getModelByTenant(null, defaultTenantsModelName, tenantsSchema)
         const tenants = await TenantModel.find({})
@@ -337,7 +373,7 @@ const processFindById = async (caseProps) => {
     let response
     
     try {
-        const { data: { id, populateParams, refModelsNames, tenantId }, modelName } = caseProps
+        const { id, modelName, populateParams, refModelsNames, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const refModels = getRefModels(refModelsNames)
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
@@ -362,14 +398,14 @@ const processFindLastIndex = async (caseProps) => {
     let response
     
     try {
-        const { data: { tenantId }, modelName } = caseProps
+        const { modelName, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
             .findOne()
             .sort('-indice')
             .then(
-                (replyData) => reply(null, replyData),
+                (replyData) => reply(null, replyData.indice),
                 (error) => reply(error)
             )
 
@@ -386,14 +422,14 @@ const processFindLastVoucherNumber = async (caseProps) => {
     let response
     
     try {
-        const { data: { code, tenantId }, modelName } = caseProps
+        const { code, modelName, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
             .findOne({ documentoCodigo: code })
             .sort('-indice')
             .then(
-                (replyData) => reply(null, replyData),
+                (replyData) => reply(null, replyData.numeroFactura),
                 (error) => reply(error)
             )
 
@@ -410,7 +446,7 @@ const processFindNewer = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, refModelsNames, sortParams, tenantId }, modelName } = caseProps
+        const { modelName, populateParams, refModelsNames, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const refModels = getRefModels(refModelsNames)
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
@@ -437,7 +473,7 @@ const processFindNewerSale = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const { modelName, populateParams, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const refModels = getRefModels([ 'documento', 'renglones', 'usuario' ])
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
@@ -467,7 +503,7 @@ const processFindOldest = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, refModelsNames, sortParams, tenantId }, modelName } = caseProps
+        const { modelName, populateParams, refModelsNames, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const refModels = getRefModels(refModelsNames)
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
@@ -494,7 +530,7 @@ const processFindOldestSale = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, sortParams, tenantId }, modelName } = caseProps
+        const { modelName, populateParams, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const refModels = getRefModels([ 'documento', 'renglones', 'usuario' ])
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
@@ -524,11 +560,11 @@ const processFindPaginated = async (caseProps) => {
     let response
 
     try {
-        const { data: { populateParams, refModelsNames, request, sortParams, tenantId }, modelName } = caseProps
+        const { modelName, populateParams, refModelsNames, request, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const refModels = getRefModels(refModelsNames)
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
-        const sortBy = sortParams ?? { ceratedAt: -1 }
+        const sortBy = sortParams ?? { createdAt: -1 }
         response = await Model
             .paginate(
                 generateQuery(request),
@@ -549,7 +585,7 @@ const processModifyStock = async (caseProps) => {
     let response
 
     try {
-        const { data: { modificationData, tenantId }, modelName } = caseProps
+        const { modelName, modificationData, tenantId } = caseProps
         const item = modificationData.product
         const isIncrement = modificationData.isIncrement
         const quantity = modificationData.quantity
@@ -604,16 +640,44 @@ const processRemove = async (caseProps) => {
     let response
 
     try {
-        const { data: { ids, tenantId }, modelName } = caseProps
+        const { childModelName, childProp, ids, modelName, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const Model = getModelByTenant(tenantId, modelName, modelSchema)
         const idsToRemove = Array.isArray(ids) ? ids : [ids]
-        response = await Model
+
+        if (!childModelName) {
+            response = await Model
             .deleteMany({ _id: { $in: idsToRemove } })
             .then(
                 (replyData) => reply(null, replyData),
                 (error) => reply(error)
             )
+
+        } else {
+            const childModelSchema = getSchema(childModelName)
+            const ChildModel = getModelByTenant(tenantId, childModelName, childModelSchema)
+            const removeResults = []
+            for (let index = 0; index < idsToRemove.length; index++) {
+                const idToRemove = idsToRemove[index]
+                let removeResult = { status: 'FAIL' }
+                await ChildModel
+                    .deleteMany(idToRemove[childProp])
+                    .then(
+                        async (childRemoveResultData) => {
+                            await Model
+                                .deleteOne(idToRemove)
+                                .then(
+                                    (removeResultData) => removeResult = reply(null, removeResultData),
+                                    (error) => removeResult = reply(error)
+                                )
+                        },
+                        (error) => removeResult = reply(error)
+                    )
+                removeResults.push(removeResult)
+            }
+            const removeResultsIncludesErrors = removeResults.find(removeResult => removeResult.status !== 'OK')
+            response = reply(removeResultsIncludesErrors ? 500 : null, editResults)
+        }
 
     } catch (error) {
         console.error(error)
@@ -628,7 +692,7 @@ const processRemoveProps = async (caseProps) => {
     let response
 
     try {
-        const { data: { props, tenantId }, modelName } = caseProps
+        const { modelName, props, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const Model = getModelByTenant(tenantId, modelName, modelSchema)
         const propsToDelete = Array.isArray(props) ? props : [props]
@@ -657,17 +721,45 @@ const processSave = async (caseProps) => {
     let response
 
     try {
-        const { data: { records, tenantId } , modelName } = caseProps
+        const { childModelName, childProp, modelName, records, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
         const Model = getModelByTenant(tenantId, modelName, modelSchema)
-        
         const recordsToSave = Array.isArray(records) ? records : [records]
-        response = await Model
+
+        if (!childModelName) {
+            response = await Model
             .insertMany(recordsToSave)
             .then(
                 (replyData) => reply(null, replyData),
                 (error) => reply(error)
             )
+
+        } else {
+            const childModelSchema = getSchema(childModelName)
+            const ChildModel = getModelByTenant(tenantId, childModelName, childModelSchema)
+            const saveResults = []
+            for (let index = 0; index < recordsToSave.length; index++) {
+                const recordToSave = recordsToSave[index]
+                let saveResult = { status: 'FAIL' }
+                await ChildModel
+                    .insertMany(recordToSave[childProp])
+                    .then(
+                        async (childRecords) => {
+                            recordToSave[childProp] = childRecords
+                            await Model
+                                .create(recordToSave)
+                                .then(
+                                    (saveResultData) => saveResult = reply(null, saveResultData),
+                                    (error) => saveResult = reply(error)
+                                )
+                        },
+                        (error) => saveResult = reply(error)
+                    )
+                saveResults.push(saveResult)
+            }
+            const saveResultsIncludesErrors = saveResults.find(saveResult => saveResult.status !== 'OK')
+            response = reply(saveResultsIncludesErrors ? 500 : null, saveResults)
+        }
 
     } catch (error) {
         console.error(error)

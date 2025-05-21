@@ -90,9 +90,9 @@ const authController = {
 
             } else {
                 const token = req.headers.authorization
-                if (!token) return res.status(403).send({
-                    authorized: false
-                })
+                if (!token) {
+                    return res.status(403).send({ authorized: false })
+                }
                 jwt.verify(token, public_key, { algorithms: ['RS256'] }, (err, loggedUser) => {
                     if (err) return res.status(401).send(errorResponseAuthorization(401, err))
                     const tenantId = req.headers.tenantid ?? null

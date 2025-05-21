@@ -91,7 +91,6 @@ const saleLinesSchema = new mongoose.Schema({
     productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'producto',
-        required: true
     },
     profit: {
         type: Number,

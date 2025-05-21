@@ -6,126 +6,141 @@ const helpers = require('../helpers')
 const { processRequest, services } = helpers.controllersHelper
 
 
+const defaultSortParams = { date: -1 }
 const modelName = 'stockHistory'
 const populateParams = ['product']
 const refModelsNames = ['producto']
 
 router.delete('/records/remove', async (request, response) => {
-    const data = {
+    const props = {
         ids: request.body,
+        modelName,
+        service: services.remove,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.remove }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.get('/records/countRecords', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
+        service: services.countRecords,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.countRecords }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.get('/records/findAll', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
         populateParams,
         refModelsNames,
+        service: services.findAll,
+        sortParams: defaultSortParams,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findAll }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.get('/records/findAllByFilters', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
         populateParams,
         refModelsNames,
         request,
+        service: services.findAllByFilters,
+        sortParams: defaultSortParams,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findAllByFilters }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.get('/records/findById', async (request, response) => {
-    const data = {
+    const props = {
         id: request.query.id,
+        modelName,
         populateParams,
         refModelsNames,
+        service: services.findById,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findById }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.get('/records/findNewer', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
         populateParams,
         refModelsNames,
-        sortParams: { date: -1 },
+        service: services.findNewer,
+        sortParams: defaultSortParams,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findNewer }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.get('/records/findOldest', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
         populateParams,
         refModelsNames,
+        service: services.findOldest,
         sortParams: { date: 1 },
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findOldest }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.get('/records/findPaginated', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
         populateParams,
         refModelsNames,
         request,
+        service: services.findPaginated,
+        sortParams: defaultSortParams,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findPaginated }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.post('/records/save', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
         records: request.body,
+        service: services.save,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.save }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.put('/records/edit', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
         records: request.body,
+        service: services.edit,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.edit }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.put('/records/removeProps', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
         props: request.body,
+        service: services.removeProps,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.removeProps }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
