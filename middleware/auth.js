@@ -71,7 +71,10 @@ const authController = {
 
                 } else {
                     const TenantModel = getModelByTenant(null, tenantModelName, tenantSchema)
-                    TenantModel.findOne({ cuit: requestingUser.empresa.cuit }).exec((error, tenant) => {
+                    const query = requestingUser?.empresa?.cuit
+                        ? { cuit: requestingUser.empresa.cuit }
+                        : { email }
+                    TenantModel.findOne(query).exec((error, tenant) => {
 
                         if (error) {
                             return res.status(500).send(errorResponse(500, error))
