@@ -16,9 +16,9 @@ const services = {
     findLastIndex: 'findLastIndex',
     findLastVoucherNumber: 'findLastVoucherNumber',
     findNewer: 'findNewer',
-    findNewerSale: 'findNewerSale',
+    findNewerFiscalSale: 'findNewerFiscalSale',
     findOldest: 'findOldest',
-    findOldestSale: 'findOldestSale',
+    findOldestFiscalSale: 'findOldestFiscalSale',
     findPaginated: 'findPaginated',
     modifyStock: 'modifyStock',
     remove: 'remove',
@@ -142,13 +142,13 @@ const processRequest = async (props) => {
         case services.findNewer:
             response = await processFindNewer(caseProps)
             break
-        case services.findNewerSale:
+        case services.findNewerFiscalSale:
             response = await processFindNewerSale(caseProps)
             break
         case services.findOldest:
             response = await processFindOldest(caseProps)
             break
-        case services.findOldestSale:
+        case services.findOldestFiscalSale:
             response = await processFindOldestSale(caseProps)
             break
         case services.findPaginated:
@@ -345,7 +345,7 @@ const processFindAllUsers = async (caseProps) => {
     let response
 
     try {
-        const { refModelsNames } = caseProps
+        const { populateParams, refModelsNames } = caseProps
         const tenantsSchema = getTenantsSchema()
         const TenantModel = getModelByTenant(null, defaultTenantsModelName, tenantsSchema)
         const tenants = await TenantModel.find({})
@@ -355,10 +355,10 @@ const processFindAllUsers = async (caseProps) => {
             const usersSchema = getUsersSchema()
             const refModels = getRefModels(refModelsNames)
             const UserModel = getModelByTenant(tenantId, defaultUsersModelName, usersSchema, refModels)
-            const tenantUsers = await UserModel.find({})
+            const tenantUsers = await UserModel.find({}).populate(populateParams)
             users.push(tenantUsers)
         }
-        response = reply(null, users)
+        response = reply(null, users.flat())
 
     } catch (error) {
         console.error(error)
@@ -405,7 +405,7 @@ const processFindLastIndex = async (caseProps) => {
             .findOne()
             .sort('-indice')
             .then(
-                (replyData) => reply(null, replyData.indice),
+                (replyData) => reply(null, replyData?.indice ?? 0),
                 (error) => reply(error)
             )
 
@@ -429,7 +429,7 @@ const processFindLastVoucherNumber = async (caseProps) => {
             .findOne({ documentoCodigo: code })
             .sort('-indice')
             .then(
-                (replyData) => reply(null, replyData.numeroFactura),
+                (replyData) => reply(null, replyData?.numeroFactura ?? 0),
                 (error) => reply(error)
             )
 
@@ -475,7 +475,7 @@ const processFindNewerSale = async (caseProps) => {
     try {
         const { modelName, populateParams, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
-        const refModels = getRefModels([ 'documento', 'renglones', 'usuario' ])
+        const refModels = getRefModels(['documento', 'ventarenglon', 'usuario'])
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         const fiscalBillCodes = ['001', '006', '011', '051', '081', '082', '083', '111', '118']
         const codesToQuery = fiscalBillCodes.map(code => { return { documentoCodigo: code } })
@@ -532,7 +532,7 @@ const processFindOldestSale = async (caseProps) => {
     try {
         const { modelName, populateParams, sortParams, tenantId } = caseProps
         const modelSchema = getSchema(modelName)
-        const refModels = getRefModels([ 'documento', 'renglones', 'usuario' ])
+        const refModels = getRefModels(['documento', 'ventarenglon', 'usuario'])
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         const fiscalBillCodes = ['001', '006', '011', '051', '081', '082', '083', '111', '118']
         const codesToQuery = fiscalBillCodes.map(code => { return { documentoCodigo: code } })
@@ -644,7 +644,6 @@ const processRemove = async (caseProps) => {
         const modelSchema = getSchema(modelName)
         const Model = getModelByTenant(tenantId, modelName, modelSchema)
         const idsToRemove = Array.isArray(ids) ? ids : [ids]
-
         if (!childModelName) {
             response = await Model
             .deleteMany({ _id: { $in: idsToRemove } })

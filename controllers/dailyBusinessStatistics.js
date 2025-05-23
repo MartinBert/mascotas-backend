@@ -9,10 +9,11 @@ const { processRequest, services } = helpers.controllersHelper
 const defaultSortParams = { dateOrder: -1 }
 const modelName = 'dailyBusinessStatistic'
 const populateParams = []
+const refModelsNames = []
 
 router.delete('/records/remove', async (request, response) => {
     const props = {
-        ids: request.body,
+        ids: request.query.ids,
         modelName,
         service: services.remove,
         tenantId: request.headers.tenantid

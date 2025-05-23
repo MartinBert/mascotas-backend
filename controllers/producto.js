@@ -12,7 +12,7 @@ const refModelsNames = ['archivo', 'marca', 'rubro', 'unidadmedida']
 
 router.delete('/records/remove', async (request, response) => {
     const props = {
-        ids: request.body,
+        ids: request.query.ids,
         modelName,
         service: services.remove,
         tenantId: request.headers.tenantid
@@ -57,13 +57,14 @@ router.get('/records/findAllByFilters', async (request, response) => {
 })
 
 router.get('/records/findAllForCatalogue', async (request, response) => {
-    const data = {
+    const props = {
         filters: request.query.filters,
+        modelName,
         populateParams,
         refModelsNames,
+        service: services.findAllForCatalogue,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findAllForCatalogue }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
@@ -141,11 +142,12 @@ router.put('/records/edit', async (request, response) => {
 })
 
 router.put('/records/modifyStock', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
         modificationData: request.body,
+        service: services.modifyStock,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.modifyStock }
     const processResult = await processRequest(props)
     response.json(processResult)
 })

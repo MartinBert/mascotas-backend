@@ -3,7 +3,7 @@ const router = express.Router()
 const auth = require('./middleware/auth')
 
 module.exports = app => {
-    router.use('/tenants', require('./controllers/tenants'))
+    router.use('/tenants', auth.withoutAuthentication, require('./controllers/tenants'))
     router.use('/auth', auth.login)
     router.use('/benefits', auth.verifyAuthentication, require('./controllers/benefits'))
     router.use('/brands', auth.verifyAuthentication, require('./controllers/marca'))

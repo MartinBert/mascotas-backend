@@ -13,7 +13,7 @@ const refModelsNames = ['usuario']
 
 router.delete('/records/remove', async (request, response) => {
     const props = {
-        ids: request.body,
+        ids: request.query.ids,
         modelName,
         service: services.remove,
         tenantId: request.headers.tenantid

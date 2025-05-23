@@ -26,7 +26,7 @@ const stockHistoriesSchema = new mongoose.Schema({
     },
     product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'product',
+        ref: 'producto',
         required: true
     }
 }, { timestamps: true })

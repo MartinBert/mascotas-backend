@@ -17,7 +17,7 @@ router.delete('/records/remove', async (request, response) => {
     const props = {
         childModelName,
         childProp,
-        ids: request.body,
+        ids: request.query.ids,
         modelName,
         service: services.remove,
         tenantId: request.headers.tenantid
@@ -77,20 +77,22 @@ router.get('/records/findById', async (request, response) => {
 })
 
 router.get('/records/findLastIndex', async (request, response) => {
-    const data = {
+    const props = {
+        modelName,
+        service: services.findLastIndex,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findLastIndex }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
 
 router.get('/records/findLastVoucherNumber', async (request, response) => {
-    const data = {
+    const props = {
         code: request.query.code,
+        modelName,
+        service: services.findLastVoucherNumber,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findLastVoucherNumber }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
@@ -108,14 +110,15 @@ router.get('/records/findNewer', async (request, response) => {
     response.json(processResult)
 })
 
-router.get('/records/findNewerSale', async (request, response) => {
-    const data = {
+router.get('/records/findNewerFiscalSale', async (request, response) => {
+    const props = {
+        modelName,
         populateParams,
         refModelsNames,
+        service: services.findNewerFiscalSale,
         sortParams: defaultSortParams,
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findNewerSale }
     const processResult = await processRequest(props)
     response.json(processResult)
 })
@@ -133,14 +136,15 @@ router.get('/records/findOldest', async (request, response) => {
     response.json(processResult)
 })
 
-router.get('/records/findOldestSale', async (request, response) => {
-    const data = {
+router.get('/records/findOldestFiscalSale', async (request, response) => {
+    const props = {
+        modelName,
         populateParams,
         refModelsNames,
+        service: services.findOldestFiscalSale,
         sortParams: { fechaEmision: 1 },
         tenantId: request.headers.tenantid
     }
-    const props = { data, modelName, service: services.findOldestSale }
     const processResult = await processRequest(props)
     response.json(processResult)
 })

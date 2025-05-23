@@ -25,7 +25,7 @@ const successResponse = (file) => {
 }
 
 // Delete image
-router.delete('/:id', (request, response) => {
+router.delete('/', (request, response) => {
     const Model = getModelByTenant(request.headers.tenantid, 'archivo', modelSchema)
     Model.findOne({_id: request.query.id}, (error, item) => {
         if(error) return response.status(500).send(errorResponse(error))
@@ -42,7 +42,7 @@ router.delete('/:id', (request, response) => {
 })
 
 // Get image url
-router.get('/:id', (request, response) => {
+router.get('/', (request, response) => {
     const Model = getModelByTenant(request.headers.tenantid, 'archivo', modelSchema)
     Model.findOne({ _id: request.query.id }, (error, item) => {
         if (error) return errorResponse(error)

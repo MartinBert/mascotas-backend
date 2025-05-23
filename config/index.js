@@ -30,13 +30,30 @@ const connectToMongoDB = () => {
     return db
 }
 
+const dataBaseNameException = [
+    { cuit: '20365455717', db: 'test' },
+    { cuit: '27306212961', db: 'tienda-mascotas' }
+]
+
+const getDatabaseName = (tenantId) => {
+    const exception = dataBaseNameException.find(exceptionItem => exceptionItem.cuit === tenantId)
+    let dbName = ''
+    if (exception) {
+        dbName = exception.db
+    } else {
+        dbName = tenantId
+    }
+    return dbName
+}
+
 const getModelByTenant = (tenantId = null, modelName, modelSchema, refModels = []) => {
     const tenantsDb = connectToMongoDB()
     if (!tenantsDb) {
         return console.log('error')
     } else {
+        // Set db
         let activeDb
-        const dbName = tenantId // CUIT
+        const dbName = getDatabaseName(tenantId)
         if (!dbName || modelName === tenantsDbName) {
             activeDb = tenantsDb
         } else {
