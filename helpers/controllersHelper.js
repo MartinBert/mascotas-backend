@@ -323,8 +323,9 @@ const processFindAllForCatalogue = async (caseProps) => {
         const refModels = getRefModels(refModelsNames)
         const Model = getModelByTenant(tenantId, modelName, modelSchema, refModels)
         const sortBy = sortParams ?? { createdAt: -1 }
+        const parsedFilters = generateQuery({ query: { filters } })
         response = await Model
-            .find(filters)
+            .find(parsedFilters)
             .sort(sortBy)
             .populate(populateParams)
             .then(
