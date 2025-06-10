@@ -1,6 +1,7 @@
 'use strict'
 const modelsData = require('../models')
 const { getModelByTenant } = require('../config')
+const { round } = require('./mathHelper')
 
 
 const defaultTenantsModelName = 'tenant'
@@ -587,42 +588,61 @@ const processModifyStock = async (caseProps) => {
 
     try {
         const { modelName, modificationData, tenantId } = caseProps
-        const item = modificationData.product
+        const product = modificationData.product
+        const isFractioned = Object.hasOwn(modificationData, 'fractionedQuantity')
         const isIncrement = modificationData.isIncrement
-        const quantity = modificationData.quantity
-        const fractionedQuantity = modificationData.fractionedQuantity
 
-        if (quantity) {
-            item.cantidadStock =
-                isIncrement
-                    ? item.cantidadStock + quantity
-                    : item.cantidadStock - quantity
+        if (isFractioned) {
+            if (isIncrement) {
+                product.cantidadFraccionadaStock += modificationData.fractionedQuantity
+            } else {
+                const resultingFractionedQuantity = product.cantidadFraccionadaStock - modificationData.fractionedQuantity
+                if (resultingFractionedQuantity < 0) {
+                    product.cantidadStock -= Math.abs(Math.floor(resultingFractionedQuantity / product.unidadMedida.fraccionamiento))
+                    product.cantidadFraccionadaStock = (
+                        Number.isInteger(resultingFractionedQuantity / product.unidadMedida.fraccionamiento)
+                            ? 0
+                            : product.unidadMedida.fraccionamiento - (Math.abs(resultingFractionedQuantity) % product.unidadMedida.fraccionamiento)
+                    )
+                } else if (resultingFractionedQuantity === 0) {
+                    product.cantidadFraccionadaStock = 0
+                } else if (resultingFractionedQuantity > 0) {
+                    product.cantidadFraccionadaStock = resultingFractionedQuantity
+                }
+            }
+
         } else {
-            item.cantidadFraccionadaStock =
-                isIncrement
-                    ? item.cantidadFraccionadaStock + fractionedQuantity
-                    : item.cantidadFraccionadaStock - fractionedQuantity
-
-            if (item.cantidadFraccionadaStock === 0) {
-                item.cantidadStock -= 1
-                item.cantidadFraccionadaStock = item.unidadMedida.fraccionamiento
-            }
-
-            if (item.cantidadFraccionadaStock < 0) {
-                item.cantidadStock -= 1
-                item.cantidadFraccionadaStock = item.unidadMedida.fraccionamiento + item.cantidadFraccionadaStock
-            }
-
-            if (item.cantidadFraccionadaStock > item.unidadMedida.fraccionamiento) {
-                item.cantidadStock += 1
-                item.cantidadFraccionadaStock = item.cantidadFraccionadaStock - item.unidadMedida.fraccionamiento
+            const fractionedQuantity = (modificationData.quantity % 1) * product.unidadMedida.fraccionamiento
+            const wholeQuantity = Math.floor(modificationData.quantity)
+            
+            if (isIncrement) {
+                product.cantidadStock += wholeQuantity
+                product.cantidadFraccionadaStock += fractionedQuantity
+            } else {
+                const resultingFractionedQuantity = product.cantidadFraccionadaStock - fractionedQuantity
+                if (resultingFractionedQuantity < 0) {
+                    product.cantidadStock -= (wholeQuantity + Math.abs(Math.floor(resultingFractionedQuantity / product.unidadMedida.fraccionamiento)))
+                    product.cantidadFraccionadaStock = (
+                        Number.isInteger(resultingFractionedQuantity / product.unidadMedida.fraccionamiento)
+                            ? 0
+                            : product.unidadMedida.fraccionamiento - (Math.abs(resultingFractionedQuantity) % product.unidadMedida.fraccionamiento)
+                    )
+                } else if (resultingFractionedQuantity === 0) {
+                    product.cantidadStock -= wholeQuantity
+                    product.cantidadFraccionadaStock = 0
+                } else if (resultingFractionedQuantity > 0) {
+                    product.cantidadStock -= wholeQuantity
+                    product.cantidadFraccionadaStock = resultingFractionedQuantity
+                }
             }
         }
+        product.cantidadStock = round(product.cantidadStock, 0)
+        product.cantidadFraccionadaStock = round(product.cantidadFraccionadaStock, 0)
 
         const modelSchema = getSchema(modelName)
         const Model = getModelByTenant(tenantId, modelName, modelSchema)
         response = await Model
-            .findOneAndUpdate({ _id: item._id }, item, { new: true })
+            .findOneAndUpdate({ _id: product._id }, product, { new: true })
             .then(
                 (replyData) => reply(null, replyData),
                 (error) => reply(error)
